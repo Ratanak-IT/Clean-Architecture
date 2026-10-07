@@ -1,6 +1,3 @@
 rootProject.name = 'istad-micro-ite2'
 includeBuild("istad-common")
 includeBuild("microservice")
-include 'microservice:customer-service:customer-service-domain'
-include 'microservice:customer-service:customer-service-domain:customer-application-service'
-include 'microservice:customer-service:customer-service-domain:customer-domain-core'
