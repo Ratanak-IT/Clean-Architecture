@@ -1,20 +1,12 @@
 plugins {
-    id 'java'
-}
-
-group = 'org.example'
-version = 'unspecified'
-
-repositories {
-    mavenCentral()
+    id 'spring-common-conventions'
 }
 
 dependencies {
-    testImplementation platform('org.junit:junit-bom:6.0.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-}
+    api('kh.edu.istad:customer-application-service')
+    implementation("org.springframework.boot:spring-boot-starter-webmvc")
+    implementation 'kh.edu.istad:istad-common-restapi'
 
-test {
-    useJUnitPlatform()
+
+
 }

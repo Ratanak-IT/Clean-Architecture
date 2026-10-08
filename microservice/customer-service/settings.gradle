@@ -21,3 +21,5 @@ include 'customer-service-restapi'
 include 'customer-service-persistence'
 include 'customer-service-message'
 include 'customer-service-main'
+
+includeBuild('../../istad-common')
