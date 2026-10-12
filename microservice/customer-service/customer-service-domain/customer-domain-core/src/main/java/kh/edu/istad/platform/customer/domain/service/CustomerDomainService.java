@@ -9,5 +9,4 @@ public interface CustomerDomainService {
     CustomerInitiatedEvent initiatedCustomer(Customer customer);
     CustomerUpdatedEvent updatedCustomer(Customer customer);
     CustomerDeactivatedEvent deactivatedCustomer(Customer customer);
-
 }

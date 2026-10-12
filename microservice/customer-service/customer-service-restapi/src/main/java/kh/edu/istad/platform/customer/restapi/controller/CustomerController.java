@@ -2,7 +2,9 @@ package kh.edu.istad.platform.customer.restapi.controller;
 
 import jakarta.validation.Valid;
 import kh.edu.istad.platform.customer.domain.dto.*;
+import kh.edu.istad.platform.customer.domain.entity.Customer;
 import kh.edu.istad.platform.customer.domain.usecase.DeactiveCustomerUseCase;
+import kh.edu.istad.platform.customer.domain.usecase.GetCustomerByIdUseCase;
 import kh.edu.istad.platform.customer.domain.usecase.UpdateCustomerUseCase;
 import kh.edu.istad.platform.customer.restapi.dto.*;
 import kh.edu.istad.platform.customer.restapi.mapper.CustomerWebMapper;
@@ -20,6 +22,7 @@ public class CustomerController {
     private final InitiateCustomerUseCase initiateCustomerUseCase;
     private final DeactiveCustomerUseCase deactiveCustomerUseCase;
     private final UpdateCustomerUseCase updateCustomerUseCase;
+    private final GetCustomerByIdUseCase getCustomerByIdUseCase;
     private final CustomerWebMapper customerWebMapper;
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
@@ -45,4 +48,10 @@ public class CustomerController {
         return customerWebMapper.toResponse(result);
     }
 
+    @GetMapping("/{customerId}")
+    public CustomerLookupResponse getCustomerById(@PathVariable("customerId") UUID customerId){
+        Customer customer = getCustomerByIdUseCase.execute(customerId);
+
+        return new CustomerLookupResponse(customer.getId().value());
+    }
 }

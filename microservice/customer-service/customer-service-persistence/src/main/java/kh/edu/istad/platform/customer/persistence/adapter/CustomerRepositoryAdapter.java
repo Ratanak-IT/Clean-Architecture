@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -47,5 +48,10 @@ public class CustomerRepositoryAdapter implements CustomerRepository{
         CustomerEntity updatedEntity = customerJpaRepository.save(mapper.toEntity(customer));
 
         return mapper.toDomain(updatedEntity);
+    }
+
+    @Override
+    public Optional<Customer> findById(UUID customerId){
+        return customerJpaRepository.findById(customerId).map(mapper::toDomain);
     }
 }

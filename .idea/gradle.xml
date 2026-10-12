@@ -41,6 +41,17 @@
                   <project path="$PROJECT_DIR$/microservice/customer-service/customer-service-restapi" />
                 </projects>
               </build>
+              <build path="$PROJECT_DIR$/microservice/order-service" name="order-service">
+                <projects>
+                  <project path="$PROJECT_DIR$/microservice/order-service" />
+                  <project path="$PROJECT_DIR$/microservice/order-service/order-service-domain" />
+                  <project path="$PROJECT_DIR$/microservice/order-service/order-service-domain/order-application-service" />
+                  <project path="$PROJECT_DIR$/microservice/order-service/order-service-domain/order-domain-core" />
+                  <project path="$PROJECT_DIR$/microservice/order-service/order-service-main" />
+                  <project path="$PROJECT_DIR$/microservice/order-service/order-service-persistence" />
+                  <project path="$PROJECT_DIR$/microservice/order-service/order-service-restapi" />
+                </projects>
+              </build>
             </builds>
           </compositeBuild>
         </compositeConfiguration>
@@ -65,6 +76,13 @@
             <option value="$PROJECT_DIR$/microservice/customer-service/customer-service-message" />
             <option value="$PROJECT_DIR$/microservice/customer-service/customer-service-persistence" />
             <option value="$PROJECT_DIR$/microservice/customer-service/customer-service-restapi" />
+            <option value="$PROJECT_DIR$/microservice/order-service" />
+            <option value="$PROJECT_DIR$/microservice/order-service/order-service-domain" />
+            <option value="$PROJECT_DIR$/microservice/order-service/order-service-domain/order-application-service" />
+            <option value="$PROJECT_DIR$/microservice/order-service/order-service-domain/order-domain-core" />
+            <option value="$PROJECT_DIR$/microservice/order-service/order-service-main" />
+            <option value="$PROJECT_DIR$/microservice/order-service/order-service-persistence" />
+            <option value="$PROJECT_DIR$/microservice/order-service/order-service-restapi" />
           </set>
         </option>
       </GradleProjectSettings>
