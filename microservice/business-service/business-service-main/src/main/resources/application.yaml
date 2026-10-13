@@ -1,0 +1,14 @@
+server:
+  port: 4002
+
+spring:
+  application:
+    name: business-service
+  mongodb:
+    uri: ${MONGO_URI:mongodb://mongod:mongod@localhost:2026/business_db?authSource=admin}
+  data:
+    mongodb:
+      auto-index-creation: true
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true

@@ -1,0 +1,15 @@
+plugins {
+    id 'springboot-common-conventions'
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+    implementation project(':payment-service-restapi')
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation('kh.edu.istad:payment-application-service')
+    implementation('kh.edu.istad:payment-domain-core')
+    implementation('kh.edu.istad:payment-service-persistence')
+    implementation('kh.edu.istad:payment-service-restapi')
+    runtimeOnly 'org.postgresql:postgresql'
+    implementation 'kh.edu.istad:istad-common-restapi'
+}

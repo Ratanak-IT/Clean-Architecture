@@ -1,0 +1,22 @@
+
+spring:
+  #  For Postgres
+  datasource:
+    url: jdbc:postgresql://localhost:5432/payment
+    username: postgres
+    password: Ratanak16
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+server:
+  port: 5002
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true

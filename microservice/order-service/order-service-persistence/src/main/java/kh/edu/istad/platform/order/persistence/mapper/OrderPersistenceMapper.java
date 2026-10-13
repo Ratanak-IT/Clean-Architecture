@@ -8,13 +8,9 @@ import kh.edu.istad.common.domain.valueobject.OrderItemId;
 import kh.edu.istad.common.domain.valueobject.TrackingId;
 import kh.edu.istad.common.domain.valueobject.ProductId;
 import kh.edu.istad.common.domain.valueobject.StreetAddress;
-import kh.edu.istad.platform.order.domain.entity.Business;
-import kh.edu.istad.platform.order.domain.entity.Customer;
 import kh.edu.istad.platform.order.domain.entity.Order;
 import kh.edu.istad.platform.order.domain.entity.OrderItem;
 import kh.edu.istad.platform.order.domain.entity.Product;
-import kh.edu.istad.platform.order.persistence.entity.BusinessEntity;
-import kh.edu.istad.platform.order.persistence.entity.BusinessProductEntity;
 import kh.edu.istad.platform.order.persistence.entity.OrderAddressEntity;
 import kh.edu.istad.platform.order.persistence.entity.OrderEntity;
 import kh.edu.istad.platform.order.persistence.entity.OrderItemEntity;
@@ -96,18 +92,4 @@ public class OrderPersistenceMapper {
                 .build();
     }
 
-    public Business toBusiness(BusinessEntity entity) {
-        List<Product> products = entity.getProducts().stream()
-                .map(this::toProduct)
-                .toList();
-        return Business.builder()
-                .businessId(new BusinessId(entity.getId()))
-                .active(entity.isActive())
-                .products(products)
-                .build();
-    }
-
-    private Product toProduct(BusinessProductEntity entity) {
-        return new Product(new ProductId(entity.getId()), entity.getName(), new Money(entity.getPrice()));
-    }
 }

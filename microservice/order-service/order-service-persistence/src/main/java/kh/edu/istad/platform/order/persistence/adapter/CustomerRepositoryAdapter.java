@@ -5,6 +5,8 @@ import kh.edu.istad.platform.order.domain.entity.Customer;
 import kh.edu.istad.platform.order.domain.port.out.CustomerRepository;
 import kh.edu.istad.platform.order.persistence.client.CustomerLookupResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -12,10 +14,12 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import java.util.Optional;
 
 @Repository
-@RequiredArgsConstructor
 public class CustomerRepositoryAdapter implements CustomerRepository {
-
     private final WebClient customerWebClient;
+
+    public CustomerRepositoryAdapter(@Value("${customer-service.base-url}") String baseUrl) {
+        this.customerWebClient = WebClient.builder().baseUrl(baseUrl).build();
+    }
 
     @Override
     public Optional<Customer> findById(CustomerId customerId) {

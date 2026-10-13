@@ -27,3 +27,10 @@ spring:
 
 customer-service:
   base-url: ${CUSTOMER_SERVICE_URL:http://localhost:5001}
+
+business-service:
+  base-url: ${BUSINESS_SERVICE_URL:http://localhost:4002}
+
+payment-service:
+  base-url: ${PAYMENT_SERVICE_URL:http://localhost:5002}
+

@@ -12,3 +12,14 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
+
+rootProject.name = 'business-service'
+
+include 'business-service-domain:business-application-service'
+include 'business-service-domain:business-domain-core'
+include 'business-service-restapi'
+include 'business-service-persistence'
+//include 'customer-service-message'
+include 'business-service-main'
+
+includeBuild('../../istad-common')
