@@ -1,6 +1,5 @@
 package kh.edu.istad.platform.order.domain.usecase;
 
-import kh.edu.istad.common.domain.exception.DomainException;
 import kh.edu.istad.common.domain.exception.ResourceNotFoundException;
 import kh.edu.istad.common.domain.valueobject.OrderId;
 import kh.edu.istad.common.domain.valueobject.OrderStatus;
@@ -9,6 +8,7 @@ import kh.edu.istad.platform.order.domain.dto.PayOrderResult;
 import kh.edu.istad.platform.order.domain.dto.PaymentResponseDto;
 import kh.edu.istad.platform.order.domain.entity.Order;
 import kh.edu.istad.platform.order.domain.event.OrderPaidEvent;
+import kh.edu.istad.platform.order.domain.exception.OrderDomainException;
 import kh.edu.istad.platform.order.domain.port.out.OrderRepository;
 import kh.edu.istad.platform.order.domain.port.out.PaymentRepository;
 import kh.edu.istad.platform.order.domain.service.OrderDomainService;
@@ -44,7 +44,8 @@ public class PayOrderUseCase {
         }
 
         if (order.getOrderStatus() != OrderStatus.PENDING) {
-            throw new DomainException("Cannot pay order in status " + order.getOrderStatus());
+            throw new OrderDomainException(
+                    "Cannot pay order with ID: " + orderId + " because current status is " + order.getOrderStatus() + " (expected PENDING)");
         }
 
         // call payment-service via Restapi

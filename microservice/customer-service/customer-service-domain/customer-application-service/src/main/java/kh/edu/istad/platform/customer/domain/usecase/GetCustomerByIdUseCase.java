@@ -1,7 +1,7 @@
 package kh.edu.istad.platform.customer.domain.usecase;
 
+import kh.edu.istad.common.domain.exception.ResourceNotFoundException;
 import kh.edu.istad.platform.customer.domain.entity.Customer;
-import kh.edu.istad.platform.customer.domain.exception.CustomerException;
 import kh.edu.istad.platform.customer.domain.port.out.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +17,7 @@ public class GetCustomerByIdUseCase {
 
     public Customer execute(UUID customerId){
         return customerRepository.findById(customerId)
-                .orElseThrow(() -> new CustomerException("CUstomer with ID: "+ customerId+" not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Customer", customerId));
     }
 }
+

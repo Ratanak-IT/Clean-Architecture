@@ -1,6 +1,7 @@
 package kh.edu.istad.platform.customer.persistence.adapter;
 
 import jakarta.transaction.Transactional;
+import kh.edu.istad.common.domain.exception.ResourceNotFoundException;
 import kh.edu.istad.platform.customer.domain.dto.UpdateCustomerCommand;
 import kh.edu.istad.platform.customer.domain.entity.Customer;
 import kh.edu.istad.platform.customer.domain.exception.CustomerException;
@@ -32,7 +33,7 @@ public class CustomerRepositoryAdapter implements CustomerRepository{
     @Override
     public Customer deactiveCustomer(UUID customerId) {
         CustomerEntity entity = customerJpaRepository.findById(customerId)
-                .orElseThrow(() -> new CustomerException("Customer with ID: " + customerId +" not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Customer", customerId));
         Customer customer = mapper.toDomain(entity);
         customer.deactivateCustomer();
         CustomerEntity updated = customerJpaRepository.save(mapper.toEntity(customer));
@@ -42,7 +43,7 @@ public class CustomerRepositoryAdapter implements CustomerRepository{
     @Override
     public Customer updateCustomer(UUID customerId, UpdateCustomerCommand request) {
         CustomerEntity entity = customerJpaRepository.findById(customerId)
-                .orElseThrow(() -> new CustomerException("Customer with id: " + customerId +" not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Customer", customerId));
         Customer customer = mapper.toDomain(entity);
         customer.updateCustomer(request.familyName(), request.givenName());
         CustomerEntity updatedEntity = customerJpaRepository.save(mapper.toEntity(customer));

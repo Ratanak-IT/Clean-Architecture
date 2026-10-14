@@ -5,6 +5,7 @@ import kh.edu.istad.common.domain.exception.DomainException;
 import kh.edu.istad.common.domain.valueobject.CreditEntryId;
 import kh.edu.istad.common.domain.valueobject.CustomerId;
 import kh.edu.istad.common.domain.valueobject.Money;
+import kh.edu.istad.platform.domain.exception.InsufficientCreditException;
 
 import java.util.UUID;
 
@@ -29,7 +30,8 @@ public class CreditEntry extends BaseEntity<CreditEntryId> {
 
     public void subtractCreditAmount(Money amount) {
         if (totalCreditAmount.isLessThan(amount)) {
-            throw new DomainException("Insufficient credit");
+            throw new InsufficientCreditException(
+                    "Insufficient credit: available balance " + totalCreditAmount.amount() + " is less than requested amount " + amount.amount());
         }
         this.totalCreditAmount = totalCreditAmount.subtract(amount);
     }

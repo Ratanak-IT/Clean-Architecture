@@ -23,6 +23,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @Slf4j
@@ -38,8 +39,19 @@ public class ProcessPaymentUseCase {
     public PaymentResult execute(ProcessPaymentCommand command) {
         log.info("Processing payment usecase with command: {}", command);
 
+        // Idempotency check: If order has already been paid, do not deduct money again
+        Optional<Payment> existingPaymentOpt = paymentRepository.findByOrderId(command.orderId());
+        if (existingPaymentOpt.isPresent()) {
+            Payment existingPayment = existingPaymentOpt.get();
+            if (existingPayment.getPaymentStatus() == PaymentStatus.COMPLETED) {
+                log.warn("Payment for order ID: {} has already been COMPLETED. Preventing duplicate debit.", command.orderId());
+                return paymentMapper.toResult(existingPayment, List.of());
+            }
+        }
+
         Payment payment = paymentMapper.toPayment(command);
         List<String> failureMessages = new ArrayList<>();
+
 
         CreditEntry creditEntry = creditEntryRepository.findByCustomerId(command.customerId())
                 .orElse(null);

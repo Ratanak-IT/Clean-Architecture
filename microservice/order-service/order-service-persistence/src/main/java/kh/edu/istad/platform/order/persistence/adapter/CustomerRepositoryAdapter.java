@@ -1,5 +1,6 @@
 package kh.edu.istad.platform.order.persistence.adapter;
 
+import kh.edu.istad.common.domain.exception.ExternalServiceException;
 import kh.edu.istad.common.domain.valueobject.CustomerId;
 import kh.edu.istad.platform.order.domain.entity.Customer;
 import kh.edu.istad.platform.order.domain.port.out.CustomerRepository;
@@ -39,8 +40,12 @@ public class CustomerRepositoryAdapter implements CustomerRepository {
                     new Customer(new CustomerId(response.customerId()))
             );
 
-        } catch (WebClientResponseException.NotFound exception) {
+        } catch (WebClientResponseException.NotFound | WebClientResponseException.BadRequest exception) {
             return Optional.empty();
+        } catch (WebClientResponseException exception) {
+            throw new ExternalServiceException(
+                    "Customer service error: " + exception.getStatusCode() + " " + exception.getResponseBodyAsString(), exception);
         }
     }
 }
+
