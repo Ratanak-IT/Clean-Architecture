@@ -9,5 +9,6 @@ dependencies {
     implementation 'kh.edu.istad:order-service-restapi'
     implementation 'kh.edu.istad:order-service-persistence'
     implementation 'kh.edu.istad:istad-common-restapi'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
     runtimeOnly 'org.postgresql:postgresql'
 }

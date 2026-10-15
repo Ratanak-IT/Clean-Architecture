@@ -30,6 +30,6 @@ public class OrderDetail extends BaseEntity<OrderId> {
     }
 
     public List<Product> getProducts() {
-        return Collections.unmodifiableList(products);
+        return products;
     }
 }

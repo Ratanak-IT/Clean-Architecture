@@ -5,17 +5,17 @@ import kh.edu.istad.platform.payment.domain.dto.CreditEntryResult;
 import kh.edu.istad.platform.payment.domain.dto.PaymentResult;
 import kh.edu.istad.platform.payment.domain.dto.ProcessPaymentCommand;
 import kh.edu.istad.platform.payment.domain.dto.TopUpCreditCommand;
-import kh.edu.istad.platform.payment.restapi.dto.CancelPaymentRequest;
 import kh.edu.istad.platform.payment.restapi.dto.CreditEntryResponse;
+import kh.edu.istad.platform.payment.restapi.dto.CreditTopUpRequest;
+import kh.edu.istad.platform.payment.restapi.dto.PaymentCancelRequest;
+import kh.edu.istad.platform.payment.restapi.dto.PaymentProcessRequest;
 import kh.edu.istad.platform.payment.restapi.dto.PaymentResponse;
-import kh.edu.istad.platform.payment.restapi.dto.ProcessPaymentRequest;
-import kh.edu.istad.platform.payment.restapi.dto.TopUpCreditRequest;
 import org.springframework.stereotype.Component;
 
 @Component
 public class PaymentWebMapper {
 
-    public ProcessPaymentCommand toCommand(ProcessPaymentRequest request) {
+    public ProcessPaymentCommand toCommand(PaymentProcessRequest request) {
         if (request == null) return null;
         return new ProcessPaymentCommand(
                 request.orderId(),
@@ -24,7 +24,7 @@ public class PaymentWebMapper {
         );
     }
 
-    public CancelPaymentCommand toCommand(CancelPaymentRequest request) {
+    public CancelPaymentCommand toCommand(PaymentCancelRequest request) {
         if (request == null) return null;
         return new CancelPaymentCommand(
                 request.paymentId(),
@@ -34,7 +34,7 @@ public class PaymentWebMapper {
         );
     }
 
-    public TopUpCreditCommand toCommand(TopUpCreditRequest request) {
+    public TopUpCreditCommand toCommand(CreditTopUpRequest request) {
         if (request == null) return null;
         return new TopUpCreditCommand(
                 request.customerId(),

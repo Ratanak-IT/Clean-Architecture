@@ -4,10 +4,10 @@ import jakarta.validation.Valid;
 import kh.edu.istad.platform.order.domain.usecase.CreateOrderUseCase;
 import kh.edu.istad.platform.order.domain.usecase.PayOrderUseCase;
 import kh.edu.istad.platform.order.domain.usecase.TrackOrderUseCase;
-import kh.edu.istad.platform.order.restapi.dto.CreateOrderRequest;
-import kh.edu.istad.platform.order.restapi.dto.CreateOrderResponse;
-import kh.edu.istad.platform.order.restapi.dto.PayOrderResponse;
-import kh.edu.istad.platform.order.restapi.dto.TrackOrderResponse;
+import kh.edu.istad.platform.order.restapi.dto.OrderCreateRequest;
+import kh.edu.istad.platform.order.restapi.dto.OrderCreateResponse;
+import kh.edu.istad.platform.order.restapi.dto.OrderPayResponse;
+import kh.edu.istad.platform.order.restapi.dto.OrderTrackResponse;
 import kh.edu.istad.platform.order.restapi.mapper.OrderWebMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,24 +34,24 @@ public class OrderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CreateOrderResponse createOrder(@Valid @RequestBody CreateOrderRequest request) {
+    public OrderCreateResponse createOrder(@Valid @RequestBody OrderCreateRequest request) {
         return mapper.toResponse(createOrderUseCase.execute(mapper.toCommand(request)));
     }
 
 //    @PostMapping("/{orderId}/pay")
 //    @ResponseStatus(HttpStatus.OK)
-//    public PayOrderResponse payOrder(@PathVariable("orderId") UUID orderId) {
+//    public OrderPayResponse payOrder(@PathVariable("orderId") UUID orderId) {
 //        return mapper.toResponse(payOrderUseCase.execute(orderId));
 //    }
 
     @PatchMapping("/{orderId}/pay")
     @ResponseStatus(HttpStatus.OK)
-    public PayOrderResponse patchPayOrder(@PathVariable("orderId") UUID orderId) {
+    public OrderPayResponse patchPayOrder(@PathVariable("orderId") UUID orderId) {
         return mapper.toResponse(payOrderUseCase.execute(orderId));
     }
 
     @GetMapping("/{trackingId}")
-    public TrackOrderResponse trackOrder(@PathVariable("trackingId") UUID trackingId) {
+    public OrderTrackResponse trackOrder(@PathVariable("trackingId") UUID trackingId) {
         return mapper.toResponse(trackOrderUseCase.execute(trackingId));
     }
 }

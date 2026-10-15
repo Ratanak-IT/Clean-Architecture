@@ -6,20 +6,17 @@ import kh.edu.istad.platform.business.domain.exception.BusinessDomainException;
 import kh.edu.istad.platform.business.domain.port.out.BusinessRepository;
 import kh.edu.istad.platform.business.persistence.mapper.BusinessPersistenceMapper;
 import kh.edu.istad.platform.business.persistence.repository.BusinessMongoRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
 @Repository
+@RequiredArgsConstructor
 public class BusinessRepositoryAdapter implements BusinessRepository {
 
     private final BusinessMongoRepository mongoRepository;
     private final BusinessPersistenceMapper mapper;
-
-    public BusinessRepositoryAdapter(BusinessMongoRepository mongoRepository, BusinessPersistenceMapper mapper) {
-        this.mongoRepository = mongoRepository;
-        this.mapper = mapper;
-    }
 
     @Override
     public Mono<Business> save(Business business) {

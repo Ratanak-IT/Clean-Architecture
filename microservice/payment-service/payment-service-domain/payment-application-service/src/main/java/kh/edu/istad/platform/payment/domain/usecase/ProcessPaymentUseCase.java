@@ -39,7 +39,6 @@ public class ProcessPaymentUseCase {
     public PaymentResult execute(ProcessPaymentCommand command) {
         log.info("Processing payment usecase with command: {}", command);
 
-        // Idempotency check: If order has already been paid, do not deduct money again
         Optional<Payment> existingPaymentOpt = paymentRepository.findByOrderId(command.orderId());
         if (existingPaymentOpt.isPresent()) {
             Payment existingPayment = existingPaymentOpt.get();

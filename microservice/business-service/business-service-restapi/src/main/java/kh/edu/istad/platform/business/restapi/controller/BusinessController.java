@@ -3,8 +3,8 @@ package kh.edu.istad.platform.business.restapi.controller;
 import jakarta.validation.Valid;
 import kh.edu.istad.platform.business.domain.usecase.GetBusinessUseCase;
 import kh.edu.istad.platform.business.domain.usecase.RegisterBusinessUseCase;
+import kh.edu.istad.platform.business.restapi.dto.BusinessRegisterRequest;
 import kh.edu.istad.platform.business.restapi.dto.BusinessResponse;
-import kh.edu.istad.platform.business.restapi.dto.RegisterBusinessRequest;
 import kh.edu.istad.platform.business.restapi.mapper.BusinessWebMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,7 +27,7 @@ public class BusinessController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<BusinessResponse> register(@Valid @RequestBody RegisterBusinessRequest request) {
+    public Mono<BusinessResponse> register(@Valid @RequestBody BusinessRegisterRequest request) {
         return registerBusinessUseCase.execute(mapper.toCommand(request))
                 .map(mapper::toResponse);
     }
@@ -36,6 +36,7 @@ public class BusinessController {
     @GetMapping("/{businessId}")
     @ResponseStatus(HttpStatus.OK)
     public Mono<BusinessResponse> getBusinessById(@PathVariable("businessId") UUID businessId) {
-        return getBusinessUseCase.execute(businessId).map(mapper::toResponse);
+        return getBusinessUseCase.execute(businessId)
+                .map(mapper::toResponse);
     }
 }

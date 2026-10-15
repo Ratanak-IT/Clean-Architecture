@@ -57,7 +57,6 @@ public class Business extends AggregateRoot<BusinessId> {
     public void validateOrder(List<String> failureMessages) {
         Guard.notNull(failureMessages, "Failure messages");
         if (orderDetail == null) {
-            // nothing to approve or reject: this is a programming/flow error, not a business decision
             throw new BusinessDomainException("There is no order to validate");
         }
         if (!active) {
