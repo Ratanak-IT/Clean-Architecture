@@ -4,7 +4,7 @@ import kh.edu.istad.common.domain.valueobject.OrderStatus;
 
 import java.util.UUID;
 
-public record PayOrderResponse(
+public record OrderPayResponse(
         UUID orderId,
         UUID trackingId,
         OrderStatus orderStatus,

@@ -6,11 +6,13 @@ import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public record TopUpCreditRequest(
+public record PaymentProcessRequest(
+        @NotNull
+        UUID orderId,
         @NotNull
         UUID customerId,
         @NotNull
         @Positive
-        BigDecimal amount
+        BigDecimal price
 ) {
 }

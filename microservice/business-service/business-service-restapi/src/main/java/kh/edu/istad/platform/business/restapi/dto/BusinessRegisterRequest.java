@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
-public record RegisterBusinessRequest(
+public record BusinessRegisterRequest(
         @NotBlank(message = "legalName is required")
         @Size(max = 100, message = "legalName must not exceed 100 characters")
         String legalName,

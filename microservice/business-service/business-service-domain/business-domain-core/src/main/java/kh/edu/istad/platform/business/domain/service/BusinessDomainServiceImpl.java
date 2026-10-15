@@ -19,7 +19,7 @@ public class BusinessDomainServiceImpl implements BusinessDomainService {
         if (business == null) {
             throw new BusinessDomainException("Business must not be null");
         }
-        business.initializeBusiness();                 // validates, then id + ACTIVE
+        business.initializeBusiness();
         return new BusinessRegisteredEvent(business, now());
     }
 

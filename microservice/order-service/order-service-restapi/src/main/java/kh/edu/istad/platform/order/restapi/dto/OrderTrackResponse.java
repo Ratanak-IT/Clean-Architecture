@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
-public record TrackOrderResponse(
+public record OrderTrackResponse(
         UUID orderId,
         UUID trackingId,
         UUID customerId,

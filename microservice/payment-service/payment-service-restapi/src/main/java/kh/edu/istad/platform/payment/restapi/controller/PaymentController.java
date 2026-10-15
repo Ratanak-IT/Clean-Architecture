@@ -12,11 +12,11 @@ import kh.edu.istad.platform.payment.domain.usecase.GetPaymentByIdUseCase;
 import kh.edu.istad.platform.payment.domain.usecase.GetPaymentByOrderIdUseCase;
 import kh.edu.istad.platform.payment.domain.usecase.ProcessPaymentUseCase;
 import kh.edu.istad.platform.payment.domain.usecase.TopUpCreditUseCase;
-import kh.edu.istad.platform.payment.restapi.dto.CancelPaymentRequest;
 import kh.edu.istad.platform.payment.restapi.dto.CreditEntryResponse;
+import kh.edu.istad.platform.payment.restapi.dto.CreditTopUpRequest;
+import kh.edu.istad.platform.payment.restapi.dto.PaymentCancelRequest;
+import kh.edu.istad.platform.payment.restapi.dto.PaymentProcessRequest;
 import kh.edu.istad.platform.payment.restapi.dto.PaymentResponse;
-import kh.edu.istad.platform.payment.restapi.dto.ProcessPaymentRequest;
-import kh.edu.istad.platform.payment.restapi.dto.TopUpCreditRequest;
 import kh.edu.istad.platform.payment.restapi.mapper.PaymentWebMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -46,7 +46,7 @@ public class PaymentController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public PaymentResponse processPayment(@Valid @RequestBody ProcessPaymentRequest request) {
+    public PaymentResponse processPayment(@Valid @RequestBody PaymentProcessRequest request) {
         ProcessPaymentCommand command = mapper.toCommand(request);
         PaymentResult result = processPaymentUseCase.execute(command);
         return mapper.toResponse(result);
@@ -54,7 +54,7 @@ public class PaymentController {
 
     @PostMapping("/credit")
     @ResponseStatus(HttpStatus.CREATED)
-    public CreditEntryResponse topUpCredit(@Valid @RequestBody TopUpCreditRequest request) {
+    public CreditEntryResponse topUpCredit(@Valid @RequestBody CreditTopUpRequest request) {
         TopUpCreditCommand command = mapper.toCommand(request);
         CreditEntryResult result = topUpCreditUseCase.execute(command);
         return mapper.toResponse(result);
@@ -62,7 +62,7 @@ public class PaymentController {
 
     @PostMapping("/cancel")
     @ResponseStatus(HttpStatus.OK)
-    public PaymentResponse cancelPayment(@Valid @RequestBody CancelPaymentRequest request) {
+    public PaymentResponse cancelPayment(@Valid @RequestBody PaymentCancelRequest request) {
         CancelPaymentCommand command = mapper.toCommand(request);
         PaymentResult result = cancelPaymentUseCase.execute(command);
         return mapper.toResponse(result);

@@ -3,9 +3,9 @@ package kh.edu.istad.platform.business.restapi.mapper;
 import kh.edu.istad.platform.business.domain.dto.BusinessResult;
 import kh.edu.istad.platform.business.domain.dto.ProductCommand;
 import kh.edu.istad.platform.business.domain.dto.RegisterBusinessCommand;
+import kh.edu.istad.platform.business.restapi.dto.BusinessRegisterRequest;
 import kh.edu.istad.platform.business.restapi.dto.BusinessResponse;
 import kh.edu.istad.platform.business.restapi.dto.ProductResponse;
-import kh.edu.istad.platform.business.restapi.dto.RegisterBusinessRequest;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
 @Component
 public class BusinessWebMapper {
 
-    public RegisterBusinessCommand toCommand(RegisterBusinessRequest request) {
+    public RegisterBusinessCommand toCommand(BusinessRegisterRequest request) {
         List<ProductCommand> products = request.products() == null ? List.of() : request.products().stream()
                 .map(product -> new ProductCommand(product.name(), product.price(), product.quantity()))
                 .toList();
