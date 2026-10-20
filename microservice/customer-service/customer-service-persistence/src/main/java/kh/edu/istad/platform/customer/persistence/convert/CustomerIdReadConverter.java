@@ -11,6 +11,10 @@ import java.util.UUID;
 public class CustomerIdReadConverter implements Converter<Document, CustomerId> {
     @Override
     public CustomerId convert(Document source) {
-        return new CustomerId(UUID.fromString(source.toString()));
+        if (source == null || !source.containsKey("_id")) {
+            return null;
+        }
+        String idValue = source.getString("_id");
+        return new CustomerId(UUID.fromString(idValue));
     }
 }

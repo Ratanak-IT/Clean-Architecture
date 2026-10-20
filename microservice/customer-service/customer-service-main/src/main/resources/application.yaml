@@ -1,38 +1,35 @@
 
 spring:
-#  For Postgres
-  datasource:
-    url: jdbc:postgresql://localhost:5432/customer
-    username: postgres
-    password: Ratanak16
-    driver-class-name: org.postgresql.Driver
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-
 #For mongoDb
-#  datasource:
-#    url: jdbc:postgresql://localhost:5432/customer
-#    username: postgres
-#    password: Ratanak16
-#    driver-class-name: org.postgresql.Driver
-#
-#  jpa:
-#    hibernate:
-#      ddl-auto: update
-#    show-sql: true
-#    properties:
-#      hibernate:
-#        format_sql: true
-#        dialect: org.hibernate.dialect.PostgreSQLDialect
+  mongodb:
+    host: localhost
+    port: 2026
+    username: mongod
+    password: mongod
+    database: db_customer
+    authentication-database: admin
+    auto-index-creation: true
+
 server:
   port: 5001
   jackson:
     deserialization:
       fail-on-unknown-properties: true
+
+
+
+  #  For Postgres
+  #  datasource:
+  #    url: jdbc:postgresql://localhost:5432/customer
+  #    username: postgres
+  #    password: Ratanak16
+  #    driver-class-name: org.postgresql.Driver
+  #
+  #  jpa:
+  #    hibernate:
+  #      ddl-auto: update
+  #    show-sql: true
+  #    properties:
+  #      hibernate:
+  #        format_sql: true
+  #        dialect: org.hibernate.dialect.PostgreSQLDialect

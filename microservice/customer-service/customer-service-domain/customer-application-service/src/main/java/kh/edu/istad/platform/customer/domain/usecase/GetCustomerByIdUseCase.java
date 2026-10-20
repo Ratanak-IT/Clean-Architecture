@@ -1,11 +1,15 @@
 package kh.edu.istad.platform.customer.domain.usecase;
 
 import kh.edu.istad.common.domain.exception.ResourceNotFoundException;
+import kh.edu.istad.common.domain.valueobject.CustomerId;
+import kh.edu.istad.platform.customer.domain.dto.GetCustomerResult;
 import kh.edu.istad.platform.customer.domain.entity.Customer;
-import kh.edu.istad.platform.customer.domain.port.out.CustomerRepository;
+//import kh.edu.istad.platform.customer.domain.port.out.CustomerRepository;
+import kh.edu.istad.platform.customer.domain.port.out.CustomerMonoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
@@ -13,11 +17,16 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 public class GetCustomerByIdUseCase {
-    private final CustomerRepository customerRepository;
+    private final CustomerMonoRepository repository;
+//    private final CustomerRepository customerRepository;
 
-    public Customer execute(UUID customerId){
-        return customerRepository.findById(customerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Customer", customerId));
+//    public Customer execute(UUID customerId){
+//        return customerRepository.findById(customerId)
+//                .orElseThrow(() -> new ResourceNotFoundException("Customer", customerId));
+//    }
+
+    public Mono<GetCustomerResult> execute(CustomerId customerId){
+        return repository.findById(customerId);
     }
 }
 

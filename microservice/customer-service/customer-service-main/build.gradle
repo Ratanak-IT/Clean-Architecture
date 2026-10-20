@@ -13,4 +13,5 @@ dependencies {
     implementation('kh.edu.istad:customer-service-restapi')
     runtimeOnly 'org.postgresql:postgresql'
     implementation 'kh.edu.istad:istad-common-restapi'
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
 }

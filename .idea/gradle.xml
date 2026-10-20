@@ -16,6 +16,7 @@
                 <projects>
                   <project path="$PROJECT_DIR$/istad-common" />
                   <project path="$PROJECT_DIR$/istad-common/istad-common-domain" />
+                  <project path="$PROJECT_DIR$/istad-common/istad-common-persistence" />
                   <project path="$PROJECT_DIR$/istad-common/istad-common-restapi" />
                 </projects>
               </build>
@@ -82,6 +83,7 @@
             <option value="$PROJECT_DIR$/build-logic" />
             <option value="$PROJECT_DIR$/istad-common" />
             <option value="$PROJECT_DIR$/istad-common/istad-common-domain" />
+            <option value="$PROJECT_DIR$/istad-common/istad-common-persistence" />
             <option value="$PROJECT_DIR$/istad-common/istad-common-restapi" />
             <option value="$PROJECT_DIR$/microservice" />
             <option value="$PROJECT_DIR$/microservice/business-service" />

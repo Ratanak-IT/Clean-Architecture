@@ -27,5 +27,4 @@ public class CustomerDomainServiceImpl implements CustomerDomainService{
         return new CustomerDeactivatedEvent(customer, ZonedDateTime.now(ZoneId.of("UTC")));
     }
 
-
 }

@@ -1,5 +1,6 @@
 package kh.edu.istad.platform.customer.domain.dto;
 
+import kh.edu.istad.platform.customer.domain.valueobject.CustomerStatus;
 import kh.edu.istad.platform.customer.domain.valueobject.Email;
 
 import java.util.UUID;
@@ -10,6 +11,7 @@ public record UpdateCustomerResult(
         String familyName,
         String givenName,
         String email,
-        String phoneNumber
+        String phoneNumber,
+        CustomerStatus customerStatus
 ) {
 }

@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 
 public record CustomerInitiateResponse(
         String customerId,
-        String userName,
+        String username,
         String familyName,
         String givenName,
         String email,
