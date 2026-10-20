@@ -19,7 +19,7 @@ public class Customer extends AggregateRoot<CustomerId> {
     private final Email email;
     private final PhoneNumber phoneNumber;
     private CustomerStatus customerStatus;
-    private String segmentId;
+    private final String segmentId;
 
     public Customer(String username, Email email, PhoneNumber phoneNumber, String familyName, String givenName, CustomerStatus customerStatus, String segmentId) {
         this.username = username;

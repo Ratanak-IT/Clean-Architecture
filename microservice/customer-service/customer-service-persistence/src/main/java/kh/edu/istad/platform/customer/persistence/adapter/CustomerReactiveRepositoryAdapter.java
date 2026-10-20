@@ -26,8 +26,6 @@ import java.util.*;
 public class CustomerReactiveRepositoryAdapter implements CustomerMonoRepository {
     private final CustomerMongoRepositoty customerMongoRepositoty;
     private final MongoFilterBuilder filterBuilder;
-    private final ReactiveMongoTemplate mongoTemplate;
-//    private final CustomerSegmentRepository segmentRepository;
     private final CustomerPersistenceMapper mapper;
 
     private record StatusSegmentCount(CustomerStatus customerStatus, String segmentId, long total) {}
