@@ -14,9 +14,10 @@ import org.mapstruct.Mapping;
 public interface CreateCustomerMapper {
 
      @Mapping(source = "phoneNumber" , target = "phoneNumber.value")
+     @Mapping(source = "segmentId", target = "segmentId.value")
      Customer toDomain(CreateCustomerCommand customerCommand);
 
-
+     @Mapping(source = "segmentId.value", target = "segmentId")
      CreateCustomerResult toResult(Customer customer);
 
      default PhoneNumber toPhoneNumber(String phoneNumber){

@@ -16,16 +16,23 @@ public class Order extends AggregateRoot<OrderId> {
     private TrackingId trackingId;
     private OrderStatus orderStatus;
     private final List<String> failureMessages;
+    //if big we doing on version
+    private Long version;
 
 
 
     public void pay() {
-        requireStatus(OrderStatus.PENDING, "pay");
+        if (orderStatus != OrderStatus.PAID){
+            throw new OrderDomainException("Order state is PAID");
+        }
         orderStatus = OrderStatus.PAID;
     }
 
     public void approve() {
         requireStatus(OrderStatus.PAID, "approve");
+        if (orderStatus != OrderStatus.APPROVED){
+            throw new OrderDomainException("Order approve is docuplicate");
+        }
         orderStatus = OrderStatus.APPROVED;
     }
 
@@ -34,7 +41,7 @@ public class Order extends AggregateRoot<OrderId> {
         setId(new OrderId(UUID.randomUUID()));
         trackingId = TrackingId.newId();
         orderStatus = OrderStatus.PENDING;
-        items.forEach(item -> item.initialize(getId(), OrderItemId.newId()));
+        items.forEach(item -> item.initialize(getId(), new OrderItemId(UUID.randomUUID())));
     }
 
     public void validateOrder() {
@@ -50,7 +57,7 @@ public class Order extends AggregateRoot<OrderId> {
     }
 
     private void validateTotalPrice() {
-        if (!price.isGreaterThanZero()) {
+        if (price ==null || !price.isGreaterThanZero()) {
             throw new OrderDomainException("Total price must be greater than zero");
         }
     }
@@ -76,8 +83,8 @@ public class Order extends AggregateRoot<OrderId> {
     }
 
     public void cancel(List<String> messages) {
-        if (orderStatus != OrderStatus.PENDING && orderStatus != OrderStatus.CANCELLING) {
-            throw new OrderDomainException("Order can't cancell it in processing");
+        if (!(orderStatus == OrderStatus.PENDING || orderStatus == OrderStatus.PAID || orderStatus == OrderStatus.CANCELLING)){
+            throw new OrderDomainException("Order in this state is can't can't cancell");
         }
         orderStatus = OrderStatus.CANCELLED;
         updateFailureMessages(messages);

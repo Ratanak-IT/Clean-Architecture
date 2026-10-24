@@ -22,6 +22,10 @@ public class CustomerRepositoryAdapter implements CustomerRepository {
         this.customerWebClient = WebClient.builder().baseUrl(baseUrl).build();
     }
 
+//    public CustomerRepositoryAdapter(WebClient.Builder loadBalancedWebClientBuilder, @Value("${customer-service.base-url}") String baseUrl){
+//        this.customerWebClient=loadBalancedWebClientBuilder.baseUrl(baseUrl).build();
+//    }
+
     @Override
     public Optional<Customer> findById(CustomerId customerId) {
         try {

@@ -68,7 +68,7 @@ public class CreateOrderUseCase {
                     ? paymentResponse.failureMessages()
                     : List.of("Payment failed");
 
-            orderDomainService.cancelOrder(saved, failureMessages);
+//            orderDomainService.cancelOrder(saved, failureMessages);
             Order cancelledOrder = orderRepository.save(saved);
             log.warn("Payment failed for order {}. New OrderStatus: {}. Reasons: {}",
                     cancelledOrder.getId().value(), cancelledOrder.getOrderStatus(), failureMessages);
@@ -76,4 +76,3 @@ public class CreateOrderUseCase {
         }
     }
 }
-

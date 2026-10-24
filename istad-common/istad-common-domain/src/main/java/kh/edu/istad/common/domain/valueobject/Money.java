@@ -29,7 +29,12 @@ public record Money(BigDecimal amount) {
     }
 
     public Money add(Money other) {
-        return new Money(amount.add(other.amount));
+        BigDecimal newBigDecimal = this.amount.add(other.amount);
+        return new Money(setScale(newBigDecimal));
+    }
+
+    public BigDecimal setScale(BigDecimal inputAmount){
+        return inputAmount.setScale(2, RoundingMode.HALF_EVEN);
     }
 
     public Money subtract(Money other) {
