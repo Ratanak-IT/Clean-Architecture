@@ -28,8 +28,6 @@ public class CustomerReactiveRepositoryAdapter implements CustomerMonoRepository
     private final MongoFilterBuilder filterBuilder;
     private final CustomerPersistenceMapper mapper;
 
-    private record StatusSegmentCount(CustomerStatus customerStatus, String segmentId, long total) {}
-
     @Override
     public Mono<CreateCustomerResult> save(Customer customer) {
         return customerMongoRepositoty.save(mapper.toDocument(customer))

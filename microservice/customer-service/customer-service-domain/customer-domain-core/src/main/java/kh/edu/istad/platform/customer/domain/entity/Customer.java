@@ -3,6 +3,7 @@ package kh.edu.istad.platform.customer.domain.entity;
 
 import kh.edu.istad.common.domain.entity.AggregateRoot;
 import kh.edu.istad.common.domain.valueobject.CustomerId;
+import kh.edu.istad.common.domain.valueobject.CustomerSegmentId;
 import kh.edu.istad.platform.customer.domain.exception.CustomerException;
 import kh.edu.istad.platform.customer.domain.valueobject.CustomerStatus;
 import kh.edu.istad.platform.customer.domain.valueobject.Email;
@@ -19,9 +20,9 @@ public class Customer extends AggregateRoot<CustomerId> {
     private final Email email;
     private final PhoneNumber phoneNumber;
     private CustomerStatus customerStatus;
-    private final String segmentId;
+    private final CustomerSegmentId segmentId;
 
-    public Customer(String username, Email email, PhoneNumber phoneNumber, String familyName, String givenName, CustomerStatus customerStatus, String segmentId) {
+    public Customer(String username, Email email, PhoneNumber phoneNumber, String familyName, String givenName, CustomerStatus customerStatus, CustomerSegmentId segmentId) {
         this.username = username;
         this.email = email;
         this.phoneNumber = phoneNumber;
@@ -63,7 +64,7 @@ public class Customer extends AggregateRoot<CustomerId> {
     }
 
 
-    public String getSegmentId() {
+    public CustomerSegmentId getSegmentId() {
         return segmentId;
     }
     public CustomerStatus getCustomerStatus() {
@@ -110,7 +111,7 @@ public class Customer extends AggregateRoot<CustomerId> {
         private Email email;
         private PhoneNumber phoneNumber;
         private CustomerStatus customerStatus;
-        private String segmentId;
+        private CustomerSegmentId segmentId;
 
 
 
@@ -126,7 +127,7 @@ public class Customer extends AggregateRoot<CustomerId> {
             id = val;
             return this;
         }
-        public Builder segmentId(String val) {
+        public Builder segmentId(CustomerSegmentId val) {
             segmentId = val;
             return this;
         }

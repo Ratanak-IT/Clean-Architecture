@@ -9,10 +9,17 @@ import java.util.Optional;
 
 public class Business extends AggregateRoot<BusinessId> {
     private final List<Product> products;
-    private final boolean active;
+    private boolean active;
+
+    public List<Product> getProducts() {
+        return products;
+    }
+    public boolean getActive(){
+        return active;
+    }
 
     public Business(BusinessId businessId, List<Product> products, boolean active) {
-        setId(businessId);
+        super.setId(businessId);
         this.products = products == null ? List.of() : List.copyOf(products);
         this.active = active;
     }
@@ -26,4 +33,8 @@ public class Business extends AggregateRoot<BusinessId> {
     public boolean isActive() {
         return active;
     }
+
+
+
+
 }

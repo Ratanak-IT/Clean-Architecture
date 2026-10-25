@@ -1,6 +1,12 @@
 
 spring:
 #For mongoDb
+  application:
+    name: customer-service
+  cloud:
+    discovery:
+      enabled: true
+
   mongodb:
     host: localhost
     port: 2026
@@ -11,10 +17,33 @@ spring:
     auto-index-creation: true
 
 server:
-  port: 5001
+  port: 0
+
   jackson:
     deserialization:
       fail-on-unknown-properties: true
+
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${random.int}
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+    statusPageUrlPath: /actuator/info
+    healthCheckUrlPath: /actuator/health
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
 
 
 

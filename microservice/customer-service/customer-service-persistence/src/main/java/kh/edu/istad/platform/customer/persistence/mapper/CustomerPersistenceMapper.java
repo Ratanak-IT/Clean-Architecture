@@ -1,6 +1,7 @@
 package kh.edu.istad.platform.customer.persistence.mapper;
 
 
+import kh.edu.istad.common.domain.valueobject.CustomerSegmentId;
 import kh.edu.istad.platform.customer.domain.dto.CreateCustomerResult;
 import kh.edu.istad.platform.customer.domain.dto.GetCustomerResult;
 import kh.edu.istad.platform.customer.domain.dto.UpdateCustomerByIdCommand;
@@ -18,10 +19,10 @@ public interface CustomerPersistenceMapper {
 
 
     @Named("segmentRef")
-    default CustomerSegmentDocument segmentRef(String segmentId) {
+    default CustomerSegmentDocument segmentRef(CustomerSegmentId segmentId) {
         if (segmentId == null) return null;
         CustomerSegmentDocument segment = new CustomerSegmentDocument();
-        segment.setId(segmentId);
+        segment.setId(segmentId.value().toString());
         return segment;
     }
 
