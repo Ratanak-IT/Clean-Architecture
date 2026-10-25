@@ -36,14 +36,27 @@ eureka:
   instance:
     prefer-ip-address: true
     instance-id: ${spring.application.name}:${random.int}
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+    statusPageUrlPath: /actuator/info
+    healthCheckUrlPath: /actuator/health
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
 
 customer-service:
 #  base-url: ${CUSTOMER_SERVICE_URL:http://localhost:5001}
   base-url: http://customer-service
 
 business-service:
-  base-url: ${BUSINESS_SERVICE_URL:http://localhost:4002}
+  base-url: http://business-service
 
 payment-service:
-  base-url: ${PAYMENT_SERVICE_URL:http://localhost:5002}
+  base-url: http://payment-service
 

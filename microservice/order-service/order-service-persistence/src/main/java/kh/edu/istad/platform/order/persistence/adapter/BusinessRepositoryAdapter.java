@@ -21,8 +21,8 @@ import java.util.Optional;
 public class BusinessRepositoryAdapter implements BusinessRepository {
     private final WebClient businessWebClient;
 
-    public BusinessRepositoryAdapter(@Value("${business-service.base-url}") String baseUrl) {
-        this.businessWebClient = WebClient.builder().baseUrl(baseUrl).build();
+    public BusinessRepositoryAdapter(WebClient.Builder loadBalanceWebClientBuinder, @Value("${business-service.base-url}") String baseUrl) {
+        this.businessWebClient = loadBalanceWebClientBuinder.baseUrl(baseUrl).build();
     }
     @Override
     public Optional<Business> findById(BusinessId businessId) {
