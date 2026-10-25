@@ -1,4 +1,4 @@
-package kh.edu.istad.platform.order.persistence.config;
+package kh.edu.istad.platform.payment.persistence.config;
 
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;

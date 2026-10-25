@@ -18,13 +18,9 @@ import java.util.Optional;
 public class CustomerRepositoryAdapter implements CustomerRepository {
     private final WebClient customerWebClient;
 
-    public CustomerRepositoryAdapter(@Value("${customer-service.base-url}") String baseUrl) {
-        this.customerWebClient = WebClient.builder().baseUrl(baseUrl).build();
+    public CustomerRepositoryAdapter(WebClient.Builder loadBalancedWebClientBuilder, @Value("${customer-service.base-url}") String baseUrl){
+        this.customerWebClient=loadBalancedWebClientBuilder.baseUrl(baseUrl).build();
     }
-
-//    public CustomerRepositoryAdapter(WebClient.Builder loadBalancedWebClientBuilder, @Value("${customer-service.base-url}") String baseUrl){
-//        this.customerWebClient=loadBalancedWebClientBuilder.baseUrl(baseUrl).build();
-//    }
 
     @Override
     public Optional<Customer> findById(CustomerId customerId) {

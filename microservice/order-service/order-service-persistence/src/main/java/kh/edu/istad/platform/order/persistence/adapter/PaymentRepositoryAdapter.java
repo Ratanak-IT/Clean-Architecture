@@ -23,8 +23,8 @@ public class PaymentRepositoryAdapter implements PaymentRepository {
 
     private final WebClient paymentWebClient;
 
-    public PaymentRepositoryAdapter(@Value("${payment-service.base-url}") String baseUrl) {
-        this.paymentWebClient = WebClient.builder().baseUrl(baseUrl).build();
+    public PaymentRepositoryAdapter(WebClient.Builder loadBalancedWebClientBuilder, @Value("${payment-service.base-url}") String baseUrl){
+        this.paymentWebClient=loadBalancedWebClientBuilder.baseUrl(baseUrl).build();
     }
 
     @Override
