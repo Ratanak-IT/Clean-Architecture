@@ -8,6 +8,7 @@ import kh.edu.istad.platform.order.domain.port.out.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
@@ -18,18 +19,18 @@ public class TrackOrderUseCase {
 
     private final OrderRepository orderRepository;
 
-    public TrackOrderResult execute(UUID trackingId) {
+    public Mono<TrackOrderResult> execute(UUID trackingId) {
         log.info("Tracking order with trackingId: {}", trackingId);
-        Order order = orderRepository.findByTrackingId(new TrackingId(trackingId))
-                .orElseThrow(() -> new ResourceNotFoundException("Order", trackingId));
 
-        return new TrackOrderResult(
-                order.getId().value(),
-                order.getTrackingId().value(),
-                order.getCustomerId().value(),
-                order.getOrderStatus(),
-                order.getPrice().amount(),
-                order.getFailureMessages()
-        );
+        return orderRepository.findByTrackingId(new TrackingId(trackingId))
+                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Not found: " + trackingId)))
+                .map(order -> new TrackOrderResult(
+                        order.getId().value(),
+                        order.getTrackingId().value(),
+                        order.getCustomerId().value(),
+                        order.getOrderStatus(),
+                        order.getPrice().amount(),
+                        order.getFailureMessages()
+                ));
     }
 }

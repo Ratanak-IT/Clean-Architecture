@@ -1,6 +1,7 @@
 package kh.edu.istad.platform.order.restapi.controller;
 
 import jakarta.validation.Valid;
+import kh.edu.istad.platform.order.domain.dto.CreateOrderCommand;
 import kh.edu.istad.platform.order.domain.usecase.CreateOrderUseCase;
 import kh.edu.istad.platform.order.domain.usecase.PayOrderUseCase;
 import kh.edu.istad.platform.order.domain.usecase.TrackOrderUseCase;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
@@ -34,8 +36,10 @@ public class OrderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public OrderCreateResponse createOrder(@Valid @RequestBody OrderCreateRequest request) {
-        return mapper.toResponse(createOrderUseCase.execute(mapper.toCommand(request)));
+    public Mono<OrderCreateResponse> createOrder(@Valid @RequestBody OrderCreateRequest request) {
+        CreateOrderCommand command = mapper.toCommand(request);
+        return createOrderUseCase.execute(command)
+                .map(mapper::toResponse);
     }
 
 //    @PostMapping("/{orderId}/pay")
@@ -46,14 +50,20 @@ public class OrderController {
 
     @PatchMapping("/{orderId}/pay")
     @ResponseStatus(HttpStatus.OK)
-    public OrderPayResponse patchPayOrder(@PathVariable("orderId") UUID orderId) {
-        return mapper.toResponse(payOrderUseCase.execute(orderId));
+    public Mono<OrderPayResponse> patchPayOrder(@PathVariable("orderId") UUID orderId) {
+        return payOrderUseCase.execute(orderId)
+                .map(mapper::toResponse);
     }
 
     @GetMapping("/{trackingId}")
-    public OrderTrackResponse trackOrder(@PathVariable("trackingId") UUID trackingId) {
-        return mapper.toResponse(trackOrderUseCase.execute(trackingId));
+    public Mono<OrderTrackResponse> trackOrder(@PathVariable("trackingId") UUID trackingId) {
+        return trackOrderUseCase.execute(trackingId)
+                .map(mapper::toResponse);
     }
+
+
+
+
 }
 
 

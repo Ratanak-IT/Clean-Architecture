@@ -5,6 +5,7 @@ import kh.edu.istad.common.domain.valueobject.*;
 import kh.edu.istad.platform.order.domain.exception.OrderDomainException;
 
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 public class Order extends AggregateRoot<OrderId> {
@@ -36,12 +37,13 @@ public class Order extends AggregateRoot<OrderId> {
         orderStatus = OrderStatus.APPROVED;
     }
 
+    Random random = new Random();
     public void initializeOrder() {
         validateOrder();
         setId(new OrderId(UUID.randomUUID()));
         trackingId = TrackingId.newId();
         orderStatus = OrderStatus.PENDING;
-        items.forEach(item -> item.initialize(getId(), new OrderItemId(UUID.randomUUID())));
+        items.forEach(item -> item.initialize(getId(), new OrderItemId(random.nextInt(10000))));
     }
 
     public void validateOrder() {

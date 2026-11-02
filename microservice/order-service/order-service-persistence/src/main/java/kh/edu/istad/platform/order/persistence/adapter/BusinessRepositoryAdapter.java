@@ -7,8 +7,6 @@ import kh.edu.istad.platform.order.domain.entity.Business;
 import kh.edu.istad.platform.order.domain.entity.Product;
 import kh.edu.istad.platform.order.domain.port.out.BusinessRepository;
 import kh.edu.istad.platform.order.persistence.client.BusinessLookupResponse;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.reactive.function.client.WebClient;

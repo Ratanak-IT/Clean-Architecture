@@ -16,8 +16,11 @@
                 <projects>
                   <project path="$PROJECT_DIR$/istad-common" />
                   <project path="$PROJECT_DIR$/istad-common/istad-common-domain" />
+                  <project path="$PROJECT_DIR$/istad-common/istad-common-grpc" />
                   <project path="$PROJECT_DIR$/istad-common/istad-common-persistence" />
                   <project path="$PROJECT_DIR$/istad-common/istad-common-restapi" />
+                  <project path="$PROJECT_DIR$/istad-common/istad-common-swagger" />
+                  <project path="$PROJECT_DIR$/istad-common/istad-common-webflux" />
                 </projects>
               </build>
               <build path="$PROJECT_DIR$/microservice" name="microservices">
@@ -56,6 +59,7 @@
               <build path="$PROJECT_DIR$/microservice/order-service" name="order-service">
                 <projects>
                   <project path="$PROJECT_DIR$/microservice/order-service" />
+                  <project path="$PROJECT_DIR$/microservice/order-service/order-service-client" />
                   <project path="$PROJECT_DIR$/microservice/order-service/order-service-domain" />
                   <project path="$PROJECT_DIR$/microservice/order-service/order-service-domain/order-application-service" />
                   <project path="$PROJECT_DIR$/microservice/order-service/order-service-domain/order-domain-core" />
@@ -88,8 +92,11 @@
             <option value="$PROJECT_DIR$/build-logic" />
             <option value="$PROJECT_DIR$/istad-common" />
             <option value="$PROJECT_DIR$/istad-common/istad-common-domain" />
+            <option value="$PROJECT_DIR$/istad-common/istad-common-grpc" />
             <option value="$PROJECT_DIR$/istad-common/istad-common-persistence" />
             <option value="$PROJECT_DIR$/istad-common/istad-common-restapi" />
+            <option value="$PROJECT_DIR$/istad-common/istad-common-swagger" />
+            <option value="$PROJECT_DIR$/istad-common/istad-common-webflux" />
             <option value="$PROJECT_DIR$/microservice" />
             <option value="$PROJECT_DIR$/microservice/business-service" />
             <option value="$PROJECT_DIR$/microservice/business-service/business-service-domain" />
@@ -108,6 +115,7 @@
             <option value="$PROJECT_DIR$/microservice/customer-service/customer-service-restapi" />
             <option value="$PROJECT_DIR$/microservice/eureka-server" />
             <option value="$PROJECT_DIR$/microservice/order-service" />
+            <option value="$PROJECT_DIR$/microservice/order-service/order-service-client" />
             <option value="$PROJECT_DIR$/microservice/order-service/order-service-domain" />
             <option value="$PROJECT_DIR$/microservice/order-service/order-service-domain/order-application-service" />
             <option value="$PROJECT_DIR$/microservice/order-service/order-service-domain/order-domain-core" />

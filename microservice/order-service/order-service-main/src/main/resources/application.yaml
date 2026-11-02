@@ -1,57 +1,77 @@
-server:
-  port: 0
+grpc:
+  client:
+    customer-service:
+      address: 'static://localhost:9090'
+      negotiation-type: plaintext
+
 
 spring:
+  main:
+    web-application-type: reactive
   application:
     name: order-service
+
+  security:
+    oauth2:
+      client:
+        registration:
+          customer-client:
+            client-id: registrar-client
+            client-secret: secret
+            authorization-grant-type: client_credentials
+            scope:
+              - client.read
+            client-authentication-method: client_secret_basic
+        provider:
+          customer-client:
+            token-uri: http://localhost:9000/oauth2/token
+  http:
+    client:
+      customer-service:
+        base-url: http://customer-service
+
+  config:
+    import:
+      - "optional:consul:"
+  profiles:
+    active: dev
   cloud:
-    discovery:
-      enabled: true
+    consul:
+      config:
+        enabled: true
+        format: yaml
+        watch:
+          enabled: true
+      discovery:
+#        health-check-url: http://host.docker.internal:9191/actuator/health
+        instance-id: ${spring.application.name}:${random.int}
+  #    discovery:
+#      enabled: true
 
-  datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/order_db}
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:Ratanak16}
+#
+  r2dbc:
+    url: r2dbc:postgresql://localhost:9543/db_order
+    username: iteuser
+    password: qwerqwer
+#
+  liquibase:
+    enabled: true
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
+    url: jdbc:postgresql://localhost:9543/db_order
+    user: iteuser
+    password: qwerqwer
     driver-class-name: org.postgresql.Driver
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    # let Hibernate create the tables first, THEN run data.sql
-    defer-datasource-initialization: true
-    properties:
-      hibernate:
-        format_sql: true
-  sql:
-    init:
-      mode: always
-  jackson:
-    deserialization:
-      fail-on-unknown-properties: true
 
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
-  instance:
-    prefer-ip-address: true
-    instance-id: ${spring.application.name}:${random.int}
-    lease-renewal-interval-in-seconds: 10
-    lease-expiration-duration-in-seconds: 30
-    statusPageUrlPath: /actuator/info
-    healthCheckUrlPath: /actuator/health
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
-  endpoint:
-    health:
-      show-details: always
+service:
+  message: Order Service From Consul
+  version: 1.0.0
+  env: dev
+  base-url: http://localhost:10000
+
 
 customer-service:
-#  base-url: ${CUSTOMER_SERVICE_URL:http://localhost:5001}
+  #  base-url: ${CUSTOMER_SERVICE_URL:http://localhost:5001}
   base-url: http://customer-service
 
 business-service:
@@ -60,3 +80,53 @@ business-service:
 payment-service:
   base-url: http://payment-service
 
+
+  #    url: jdbc:postgresql://localhost:9543/db_order
+#    user: iteuser
+#    password: qwerqwer
+#    driver-class-name: org.postgresql.Driver
+
+#  datasource:
+#    url: ${DB_URL:jdbc:postgresql://localhost:5432/order_db}
+#    username: ${DB_USERNAME:postgres}
+#    password: ${DB_PASSWORD:Ratanak16}
+#    driver-class-name: org.postgresql.Driver
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#    show-sql: true
+#    # let Hibernate create the tables first, THEN run data.sql
+#    defer-datasource-initialization: true
+#    properties:
+#      hibernate:
+#        format_sql: true
+#  sql:
+#    init:
+#      mode: always
+#  jackson:
+#    deserialization:
+#      fail-on-unknown-properties: true
+  
+
+
+#
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: http://localhost:8761/eureka/
+#  instance:
+#    prefer-ip-address: true
+#    instance-id: ${spring.application.name}:${random.int}
+#    lease-renewal-interval-in-seconds: 10
+#    lease-expiration-duration-in-seconds: 30
+#    statusPageUrlPath: /actuator/info
+#    healthCheckUrlPath: /actuator/health
+#
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: health,info
+#  endpoint:
+#    health:
+#      show-details: always

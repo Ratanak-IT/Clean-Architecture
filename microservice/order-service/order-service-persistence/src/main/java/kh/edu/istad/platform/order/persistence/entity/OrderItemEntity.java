@@ -1,46 +1,35 @@
 package kh.edu.istad.platform.order.persistence.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
-@Entity
-@Table(name = "order_items")
-@Setter
+@Table("order_items")
 @Getter
+@Setter
 @NoArgsConstructor
 public class OrderItemEntity {
 
     @Id
-    @Column(name = "id", nullable = false)
-    private UUID id;
+    private OrderItemEntityId orderItemEntityId;
+    @Column("order_id")
+    private UUID orderId;
 
-    @ManyToOne
-    @JoinColumn(name = "order_id", nullable = false)
-    private OrderEntity order;
-
-    @Column(name = "product_id", nullable = false)
+    @Column("product_id")
     private UUID productId;
 
-    @Column(name = "product_name", length = 100)
-    private String productName;
-
-    @Column(name = "quantity", nullable = false)
+    @Column("quantity")
     private int quantity;
 
-    @Column(name = "price", nullable = false, precision = 10, scale = 2)
+    @Column("price")
     private BigDecimal price;
 
-    @Column(name = "sub_total", nullable = false, precision = 10, scale = 2)
+    @Column("sub_total")
     private BigDecimal subTotal;
-
 }

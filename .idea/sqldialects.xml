@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SqlDialectMappings">
+    <file url="file://$PROJECT_DIR$/deployment/postgres/init_db/001_create_db.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/microservice/order-service/order-service-main/src/main/resources/db/changelog/data/changelog_0001.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/microservice/order-service/order-service-main/src/main/resources/db/changelog/ddl/changelog_0001.sql" dialect="GenericSQL" />
+  </component>
+</project>

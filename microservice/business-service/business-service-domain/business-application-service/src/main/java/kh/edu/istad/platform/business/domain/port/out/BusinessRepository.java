@@ -1,10 +1,13 @@
 package kh.edu.istad.platform.business.domain.port.out;
 
 import kh.edu.istad.common.domain.valueobject.BusinessId;
+import kh.edu.istad.platform.business.domain.dto.BusinessResult;
 import kh.edu.istad.platform.business.domain.entity.Business;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface BusinessRepository {
+    Flux<Business> findAll();
 
     Mono<Business> save(Business business);
 

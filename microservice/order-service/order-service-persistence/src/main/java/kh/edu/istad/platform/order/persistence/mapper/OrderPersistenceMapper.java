@@ -1,13 +1,6 @@
 package kh.edu.istad.platform.order.persistence.mapper;
 
-import kh.edu.istad.common.domain.valueobject.BusinessId;
-import kh.edu.istad.common.domain.valueobject.CustomerId;
-import kh.edu.istad.common.domain.valueobject.Money;
-import kh.edu.istad.common.domain.valueobject.OrderId;
-import kh.edu.istad.common.domain.valueobject.OrderItemId;
-import kh.edu.istad.common.domain.valueobject.TrackingId;
-import kh.edu.istad.common.domain.valueobject.ProductId;
-import kh.edu.istad.common.domain.valueobject.StreetAddress;
+import kh.edu.istad.common.domain.valueobject.*;
 import kh.edu.istad.platform.order.domain.entity.Order;
 import kh.edu.istad.platform.order.domain.entity.OrderItem;
 import kh.edu.istad.platform.order.domain.entity.Product;
@@ -17,60 +10,73 @@ import kh.edu.istad.platform.order.persistence.entity.OrderItemEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Component
 public class OrderPersistenceMapper {
 
-    public OrderEntity toEntity(Order order) {
-        OrderEntity entity = new OrderEntity();
-        entity.setId(order.getId().value());
-        entity.setCustomerId(order.getCustomerId().value());
-        entity.setBusinessId(order.getBusinessId().value());
-        entity.setPrice(order.getPrice().amount());
-        entity.setTrackingId(order.getTrackingId().value());
-        entity.setOrderStatus(order.getOrderStatus());
-        entity.setFailureMessages(
-                order.getFailureMessages() != null
-                        ? new ArrayList<>(order.getFailureMessages())
-                        : new ArrayList<>()
-        );
-        StreetAddress address = order.getDeliveryAddress();
-        OrderAddressEntity addressEntity = new OrderAddressEntity();
-        addressEntity.setId(address.id());
-        addressEntity.setStreet(address.street());
-        addressEntity.setPostalCode(address.postalCode());
-        addressEntity.setCity(address.city());
-        addressEntity.setOrder(entity);
-        entity.setAddress(addressEntity);
+    private static final String FAILURE_MESSAGE_DELIMITER = ",";
 
-        List<OrderItemEntity> itemEntities = new ArrayList<>();
-        for (OrderItem item : order.getItems()) {
-            OrderItemEntity itemEntity = new OrderItemEntity();
-            itemEntity.setId(item.getId().value());
-            itemEntity.setOrder(entity);         // owning side of the relation
-            itemEntity.setProductId(item.getProduct().getId().value());
-            itemEntity.setProductName(item.getProduct().getName());
-            itemEntity.setQuantity(item.getQuantity());
-            itemEntity.setPrice(item.getPrice().amount());
-            itemEntity.setSubTotal(item.getSubTotal().amount());
-            itemEntities.add(itemEntity);
+    public OrderEntity toEntity(Order order) {
+        if (order == null) return null;
+
+        OrderEntity entity = new OrderEntity();
+        entity.setId(order.getId() != null ? order.getId().value() : null);
+        entity.setCustomerId(order.getCustomerId() != null ? order.getCustomerId().value() : null);
+        entity.setBusinessId(order.getBusinessId() != null ? order.getBusinessId().value() : null);
+        entity.setPrice(order.getPrice() != null ? order.getPrice().amount() : null);
+        entity.setTrackingId(order.getTrackingId() != null ? order.getTrackingId().value() : null);
+
+        entity.setOrderStatus(order.getOrderStatus() != null ? order.getOrderStatus().name() : null);
+
+        // 2. List<String> -> String (joined by delimiter)
+        entity.setFailureMessages(toFailureMessagesString(order.getFailureMessages()));
+
+        if (order.getDeliveryAddress() != null) {
+            entity.setOrderAddressId(order.getDeliveryAddress().id());
         }
-        entity.setItems(itemEntities);
+
         return entity;
     }
 
-    public Order toDomain(OrderEntity entity) {
-        OrderId orderId = new OrderId(entity.getId());
-        OrderAddressEntity addressEntity = entity.getAddress();
+    public OrderAddressEntity toAddressEntity(Order order) {
+        if (order == null || order.getDeliveryAddress() == null) return null;
 
-        List<OrderItem> items = entity.getItems().stream()
+        StreetAddress address = order.getDeliveryAddress();
+        OrderAddressEntity e = new OrderAddressEntity();
+        e.setId(address.id());
+        e.setStreet(address.street());
+        e.setPostalCode(address.postalCode());
+        e.setCity(address.city());
+        return e;
+    }
+
+    public List<OrderItemEntity> toItemEntities(Order order) {
+        if (order == null || order.getItems() == null) return new ArrayList<>();
+
+        List<OrderItemEntity> list = new ArrayList<>();
+        for (OrderItem item : order.getItems()) {
+            OrderItemEntity e = new OrderItemEntity();
+            e.setOrderId(order.getId() != null ? order.getId().value() : null);
+            e.setProductId(item.getProduct().getId().value());
+            e.setQuantity(item.getQuantity());
+            e.setPrice(item.getPrice().amount());
+            e.setSubTotal(item.getSubTotal().amount());
+            list.add(e);
+        }
+        return list;
+    }
+
+    public Order toDomain(OrderEntity entity, OrderAddressEntity addressEntity, List<OrderItemEntity> itemEntities) {
+        OrderId orderId = new OrderId(entity.getId());
+
+        List<OrderItem> items = itemEntities == null ? new ArrayList<>() : itemEntities.stream()
                 .map(itemEntity -> OrderItem.Builder.newBuilder()
-                        .id(new OrderItemId(itemEntity.getId()))
                         .orderId(orderId)
                         .product(new Product(
                                 new ProductId(itemEntity.getProductId()),
-                                itemEntity.getProductName(),
+                                "", // Product name is in catalog/product domain
                                 new Money(itemEntity.getPrice())))
                         .quantity(itemEntity.getQuantity())
                         .price(new Money(itemEntity.getPrice()))
@@ -78,18 +84,36 @@ public class OrderPersistenceMapper {
                         .build())
                 .toList();
 
+        StreetAddress deliveryAddress = addressEntity != null
+                ? new StreetAddress(addressEntity.getId(), addressEntity.getStreet(), addressEntity.getPostalCode(), addressEntity.getCity())
+                : null;
+
         return Order.Builder.newBuilder()
                 .id(orderId)
                 .customerId(new CustomerId(entity.getCustomerId()))
                 .businessId(new BusinessId(entity.getBusinessId()))
-                .deliveryAddress(new StreetAddress(addressEntity.getId(), addressEntity.getStreet(),
-                        addressEntity.getPostalCode(), addressEntity.getCity()))
+                .deliveryAddress(deliveryAddress)
                 .price(new Money(entity.getPrice()))
                 .items(items)
                 .trackingId(new TrackingId(entity.getTrackingId()))
-                .orderStatus(entity.getOrderStatus())
-                .failureMessages(entity.getFailureMessages())
+                // 1. String -> OrderStatus (Enum)
+                .orderStatus(entity.getOrderStatus() != null ? OrderStatus.valueOf(entity.getOrderStatus()) : null)
+                // 2. String -> List<String>
+                .failureMessages(toFailureMessagesList(entity.getFailureMessages()))
                 .build();
     }
 
+    private String toFailureMessagesString(List<String> messages) {
+        if (messages == null || messages.isEmpty()) {
+            return "";
+        }
+        return String.join(FAILURE_MESSAGE_DELIMITER, messages);
+    }
+
+    private List<String> toFailureMessagesList(String messages) {
+        if (messages == null || messages.isBlank()) {
+            return new ArrayList<>();
+        }
+        return new ArrayList<>(Arrays.asList(messages.split(FAILURE_MESSAGE_DELIMITER)));
+    }
 }

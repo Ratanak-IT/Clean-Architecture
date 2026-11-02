@@ -20,6 +20,7 @@ import kh.edu.istad.platform.order.domain.service.OrderDomainService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -35,44 +36,55 @@ public class CreateOrderUseCase {
     private final OrderDomainService orderDomainService;
     private final CreateOrderMapper mapper;
 
-    public CreateOrderResult execute(CreateOrderCommand command) {
+    public Mono<CreateOrderResult> execute(CreateOrderCommand command) {
         log.info("Creating order for customer {} with business {}", command.customerId(), command.businessId());
 
-        customerRepository.findById(new CustomerId(command.customerId()))
-                .orElseThrow(() -> new ResourceNotFoundException("Customer", command.customerId()));
-        Business business = businessRepository.findById(new BusinessId(command.businessId()))
-                .orElseThrow(() -> new ResourceNotFoundException("Business", command.businessId()));
+        Mono<CustomerId> customerMono = customerRepository.findById(new CustomerId(command.customerId()))
+                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Customer", command.customerId())))
+                .map(c -> new CustomerId(command.customerId()));
 
-        Order order = mapper.toOrder(command);
-        OrderCreatedEvent event = orderDomainService.validateAndInitiateOrder(order, business);
-        Order saved = orderRepository.save(order);
+        Mono<Business> businessMono = Mono.justOrEmpty(businessRepository.findById(new BusinessId(command.businessId())))
+                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Business", command.businessId())));
 
-        log.info("Order {} created with tracking id {} (status: {})",
-                saved.getId().value(), saved.getTrackingId().value(), saved.getOrderStatus());
+        return Mono.zip(customerMono, businessMono)
+                .flatMap(tuple -> {
+                    Business business = tuple.getT2();
 
-        // Process payment synchronously with payment-service via REST API
-        PaymentResponseDto paymentResponse = paymentRepository.processPayment(
-                saved.getId(),
-                saved.getCustomerId(),
-                saved.getPrice()
-        );
+                    Order order = mapper.toOrder(command);
+                    OrderCreatedEvent event = orderDomainService.validateAndInitiateOrder(order, business);
 
-        if (paymentResponse != null && PaymentStatus.COMPLETED.equals(paymentResponse.paymentStatus())) {
-            OrderPaidEvent paidEvent = orderDomainService.payOrder(saved);
-            Order paidOrder = orderRepository.save(saved);
-            log.info("Payment succeeded for order {}. New OrderStatus: {}",
-                    paidOrder.getId().value(), paidOrder.getOrderStatus());
-            return mapper.toResult(paidOrder, "Order created and paid successfully");
-        } else {
-            List<String> failureMessages = (paymentResponse != null && paymentResponse.failureMessages() != null && !paymentResponse.failureMessages().isEmpty())
-                    ? paymentResponse.failureMessages()
-                    : List.of("Payment failed");
+                    return orderRepository.save(order)
+                            .flatMap(saved -> {
+                                log.info("Order {} created with tracking id {} (status: {})",
+                                        saved.getId().value(), saved.getTrackingId().value(), saved.getOrderStatus());
 
-//            orderDomainService.cancelOrder(saved, failureMessages);
-            Order cancelledOrder = orderRepository.save(saved);
-            log.warn("Payment failed for order {}. New OrderStatus: {}. Reasons: {}",
-                    cancelledOrder.getId().value(), cancelledOrder.getOrderStatus(), failureMessages);
-            return mapper.toResult(cancelledOrder, "Order created but payment failed: " + String.join(", ", failureMessages));
-        }
+                                PaymentResponseDto paymentResponse = paymentRepository.processPayment(
+                                        saved.getId(),
+                                        saved.getCustomerId(),
+                                        saved.getPrice()
+                                );
+
+                                if (paymentResponse != null && PaymentStatus.COMPLETED.equals(paymentResponse.paymentStatus())) {
+                                    OrderPaidEvent paidEvent = orderDomainService.payOrder(saved);
+                                    return orderRepository.save(saved)
+                                            .map(paidOrder -> {
+                                                log.info("Payment succeeded for order {}. New OrderStatus: {}",
+                                                        paidOrder.getId().value(), paidOrder.getOrderStatus());
+                                                return mapper.toResult(paidOrder, "Order created and paid successfully");
+                                            });
+                                } else {
+                                    List<String> failureMessages = (paymentResponse != null && paymentResponse.failureMessages() != null && !paymentResponse.failureMessages().isEmpty())
+                                            ? paymentResponse.failureMessages()
+                                            : List.of("Payment failed");
+
+                                    return orderRepository.save(saved)
+                                            .map(cancelledOrder -> {
+                                                log.warn("Payment failed for order {}. New OrderStatus: {}. Reasons: {}",
+                                                        cancelledOrder.getId().value(), cancelledOrder.getOrderStatus(), failureMessages);
+                                                return mapper.toResult(cancelledOrder, "Order created but payment failed: " + String.join(", ", failureMessages));
+                                            });
+                                }
+                            });
+                });
     }
 }

@@ -8,8 +8,12 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication(scanBasePackages = {
         "kh.edu.istad.platform.customer",
         "kh.edu.istad.common.restapi"
+}
+,
+exclude = {
+        net.devh.boot.grpc.server.autoconfigure.GrpcMetadataConsulConfiguration.class
 })
-@EnableDiscoveryClient
+//@EnableDiscoveryClient
 public class CustomerApplicationService {
     public static void main(String[] args) {
         SpringApplication.run(CustomerApplicationService.class, args);

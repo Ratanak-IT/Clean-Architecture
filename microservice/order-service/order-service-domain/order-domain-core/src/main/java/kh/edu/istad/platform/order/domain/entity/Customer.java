@@ -10,6 +10,7 @@ public class Customer extends AggregateRoot<CustomerId> {
 
     public Customer(CustomerId customerId) {
         setId(customerId);
+
 //        this.username=username;
 //        this.familyName=familyName;
 //        this.givenName=givenName;
