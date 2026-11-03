@@ -1,0 +1,11 @@
+plugins {
+    id 'springboot-common-conventions'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation libs.springdoc.openapi.starter.webmvc.ui
+}

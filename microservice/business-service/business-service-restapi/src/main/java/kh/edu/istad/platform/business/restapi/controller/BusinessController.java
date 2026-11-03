@@ -1,6 +1,7 @@
 package kh.edu.istad.platform.business.restapi.controller;
 
 import jakarta.validation.Valid;
+import kh.edu.istad.platform.business.domain.usecase.GetAllBusinessUseCase;
 import kh.edu.istad.platform.business.domain.usecase.GetBusinessUseCase;
 import kh.edu.istad.platform.business.domain.usecase.RegisterBusinessUseCase;
 import kh.edu.istad.platform.business.restapi.dto.BusinessRegisterRequest;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
@@ -22,13 +24,20 @@ public class BusinessController {
 
     private final RegisterBusinessUseCase registerBusinessUseCase;
     private final GetBusinessUseCase getBusinessUseCase;
+    private final GetAllBusinessUseCase getAllBusinessUseCase;
     private final BusinessWebMapper mapper;
 
 
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public Flux<BusinessResponse> getAll(){
+        return getAllBusinessUseCase.execute().map(mapper::toResponse);
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<BusinessResponse> register(@Valid @RequestBody BusinessRegisterRequest request) {
-        return registerBusinessUseCase.execute(mapper.toCommand(request))
+    public Mono<BusinessResponse> register(@Valid @RequestBody BusinessRegisterRequest registerRequest){
+        return registerBusinessUseCase.execute(mapper.toCommand(registerRequest))
                 .map(mapper::toResponse);
     }
 

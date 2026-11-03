@@ -19,9 +19,9 @@ public class GetBusinessUseCase {
     private final BusinessMapper mapper;
 
 
-    public Mono<BusinessResult> execute(UUID businessId) {
-        return businessRepository.findById(new BusinessId(businessId))
-                .switchIfEmpty(Mono.error(() -> new ResourceNotFoundException("Business", businessId)))
+    public Mono<BusinessResult> execute(UUID id){
+        return businessRepository.findById(new BusinessId(id))
+                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Business not found with id:", id)))
                 .map(mapper::toResult);
     }
 }
