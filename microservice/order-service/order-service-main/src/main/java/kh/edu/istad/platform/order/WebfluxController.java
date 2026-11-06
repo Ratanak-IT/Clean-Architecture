@@ -20,6 +20,7 @@ import java.util.UUID;
 @RefreshScope
 @RequiredArgsConstructor
 public class WebfluxController {
+    //for testing
     private final CustomerRepository customerRepository;
     private final ServicePropConfig servicePropConfig;
 

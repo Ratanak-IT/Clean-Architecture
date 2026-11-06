@@ -2,6 +2,10 @@ plugins {
     id 'spring-cloud-common-conventions'
 }
 
+sourceSets {
+    main.java.srcDir 'build/generated/buf'
+}
+
 dependencies {
 //    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
     implementation project(':customer-service-restapi')
@@ -12,7 +16,12 @@ dependencies {
     implementation project(':customer-service-persistence')
     runtimeOnly 'org.postgresql:postgresql'
     implementation 'kh.edu.istad:istad-common-restapi'
+    // gRPC server
+    implementation 'org.springframework.boot:spring-boot-starter-grpc-server'
     implementation 'kh.edu.istad:istad-common-grpc'
+//    implementation libs.bundles.grpc
+//    compileOnly libs.tomcat.annotations.api
+
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.cloud:spring-cloud-starter-consul-discovery'
@@ -23,8 +32,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-grpc-client'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 //    Oauth2 dependency
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-
+//    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+//    implementation 'org.springframework.boot:spring-boot-starter-security'
 }
 

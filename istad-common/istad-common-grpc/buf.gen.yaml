@@ -1,10 +1,13 @@
 version: v2
 clean: true
+inputs:
+  - module: buf.build/iteistad/customer-service
 plugins:
   - remote: buf.build/protocolbuffers/java:v25.2
-    out: gen/java
+    out: build/generated/buf
   - remote: buf.build/grpc/java:v1.60.0
-    out: gen/java
+    out: build/generated/buf
+
   - remote: buf.build/protocolbuffers/python:v25.2
     out: gen/python
   - remote: buf.build/grpc/python:v1.60.0

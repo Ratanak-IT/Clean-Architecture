@@ -5,11 +5,11 @@ import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import kh.edu.istad.common.domain.valueobject.CustomerId;
 import kh.edu.istad.common.domain.exception.ResourceNotFoundException;
-import kh.edu.istad.customerservice.grpc.CustomerGetResponse;
 import kh.edu.istad.customerservice.grpc.CustomerServiceGrpc;
+import kh.edu.istad.platform.customer.domain.port.out.CustomerMonoRepository;
+import kh.edu.istad.customerservice.grpc.CustomerGetResponse;
 import kh.edu.istad.customerservice.grpc.GetAllCustomerRequest;
 import kh.edu.istad.customerservice.grpc.GetCustomerRequest;
-import kh.edu.istad.platform.customer.domain.port.out.CustomerMonoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.grpc.server.service.GrpcService;
 
@@ -56,7 +56,7 @@ public class CustomerServiceImpl extends CustomerServiceGrpc.CustomerServiceImpl
                        .setEmail(customer.email())
                        .setPhoneNumber(customer.phoneNumber())
                        .setCustomerStatus(customer.customerStatus().name())
-                       .setSegment(customer.segment().name())
+                       .setSegment(customer.segment() != null ? customer.segment().toString() : "")
                        .build())
                .subscribe(
                        responseObserver::onNext, //sent data to client as stream

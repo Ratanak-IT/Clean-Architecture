@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-import customer_pb2 as customer__pb2
+from proto.customer import customer_pb2 as proto_dot_customer_dot_customer__pb2
 
 
 class CustomerServiceStub(object):
@@ -16,18 +16,18 @@ class CustomerServiceStub(object):
         """
         self.GetCustomerById = channel.unary_unary(
                 '/customer.CustomerService/GetCustomerById',
-                request_serializer=customer__pb2.GetCustomerRequest.SerializeToString,
-                response_deserializer=customer__pb2.CustomerGetResponse.FromString,
+                request_serializer=proto_dot_customer_dot_customer__pb2.GetCustomerRequest.SerializeToString,
+                response_deserializer=proto_dot_customer_dot_customer__pb2.CustomerGetResponse.FromString,
                 )
         self.GetAllCustomer = channel.unary_stream(
                 '/customer.CustomerService/GetAllCustomer',
-                request_serializer=customer__pb2.GetAllCustomerRequest.SerializeToString,
-                response_deserializer=customer__pb2.CustomerGetResponse.FromString,
+                request_serializer=proto_dot_customer_dot_customer__pb2.GetAllCustomerRequest.SerializeToString,
+                response_deserializer=proto_dot_customer_dot_customer__pb2.CustomerGetResponse.FromString,
                 )
         self.GetCustomerByUsername = channel.unary_unary(
                 '/customer.CustomerService/GetCustomerByUsername',
-                request_serializer=customer__pb2.GetCustomerByUsernameRequest.SerializeToString,
-                response_deserializer=customer__pb2.CustomerGetResponse.FromString,
+                request_serializer=proto_dot_customer_dot_customer__pb2.GetCustomerByUsernameRequest.SerializeToString,
+                response_deserializer=proto_dot_customer_dot_customer__pb2.CustomerGetResponse.FromString,
                 )
 
 
@@ -57,18 +57,18 @@ def add_CustomerServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'GetCustomerById': grpc.unary_unary_rpc_method_handler(
                     servicer.GetCustomerById,
-                    request_deserializer=customer__pb2.GetCustomerRequest.FromString,
-                    response_serializer=customer__pb2.CustomerGetResponse.SerializeToString,
+                    request_deserializer=proto_dot_customer_dot_customer__pb2.GetCustomerRequest.FromString,
+                    response_serializer=proto_dot_customer_dot_customer__pb2.CustomerGetResponse.SerializeToString,
             ),
             'GetAllCustomer': grpc.unary_stream_rpc_method_handler(
                     servicer.GetAllCustomer,
-                    request_deserializer=customer__pb2.GetAllCustomerRequest.FromString,
-                    response_serializer=customer__pb2.CustomerGetResponse.SerializeToString,
+                    request_deserializer=proto_dot_customer_dot_customer__pb2.GetAllCustomerRequest.FromString,
+                    response_serializer=proto_dot_customer_dot_customer__pb2.CustomerGetResponse.SerializeToString,
             ),
             'GetCustomerByUsername': grpc.unary_unary_rpc_method_handler(
                     servicer.GetCustomerByUsername,
-                    request_deserializer=customer__pb2.GetCustomerByUsernameRequest.FromString,
-                    response_serializer=customer__pb2.CustomerGetResponse.SerializeToString,
+                    request_deserializer=proto_dot_customer_dot_customer__pb2.GetCustomerByUsernameRequest.FromString,
+                    response_serializer=proto_dot_customer_dot_customer__pb2.CustomerGetResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -92,8 +92,8 @@ class CustomerService(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/customer.CustomerService/GetCustomerById',
-            customer__pb2.GetCustomerRequest.SerializeToString,
-            customer__pb2.CustomerGetResponse.FromString,
+            proto_dot_customer_dot_customer__pb2.GetCustomerRequest.SerializeToString,
+            proto_dot_customer_dot_customer__pb2.CustomerGetResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -109,8 +109,8 @@ class CustomerService(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_stream(request, target, '/customer.CustomerService/GetAllCustomer',
-            customer__pb2.GetAllCustomerRequest.SerializeToString,
-            customer__pb2.CustomerGetResponse.FromString,
+            proto_dot_customer_dot_customer__pb2.GetAllCustomerRequest.SerializeToString,
+            proto_dot_customer_dot_customer__pb2.CustomerGetResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -126,7 +126,7 @@ class CustomerService(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/customer.CustomerService/GetCustomerByUsername',
-            customer__pb2.GetCustomerByUsernameRequest.SerializeToString,
-            customer__pb2.CustomerGetResponse.FromString,
+            proto_dot_customer_dot_customer__pb2.GetCustomerByUsernameRequest.SerializeToString,
+            proto_dot_customer_dot_customer__pb2.CustomerGetResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

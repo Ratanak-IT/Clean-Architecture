@@ -6,10 +6,11 @@ import io.grpc.Metadata;
 import io.grpc.stub.MetadataUtils;
 import kh.edu.istad.common.domain.exception.ResourceNotFoundException;
 import kh.edu.istad.common.domain.valueobject.CustomerId;
+
 import kh.edu.istad.customerservice.grpc.CustomerGetResponse;
 import kh.edu.istad.customerservice.grpc.CustomerServiceGrpc;
-import kh.edu.istad.customerservice.grpc.GetCustomerRequest;
 import kh.edu.istad.customerservice.grpc.GetAllCustomerRequest;
+import kh.edu.istad.customerservice.grpc.GetCustomerRequest;
 import kh.edu.istad.platform.order.domain.dto.CustomerResult;
 import kh.edu.istad.platform.order.domain.port.out.CustomerRepository;
 import kh.edu.istad.platform.order.client.exception.DownStreamServiceException;
@@ -63,7 +64,7 @@ public class CustomerGrpcAdapter implements CustomerRepository {
                     return new DownStreamServiceException(ex.getMessage(), "customer-service");
                 });
     }
-    
+
     @Override
     public Flux<CustomerResult> getAllCustomer() {
         return Flux.defer(() -> {
