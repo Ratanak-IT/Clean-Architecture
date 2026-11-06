@@ -1,0 +1,63 @@
+spring:
+  application:
+    name: gateway-server
+  config:
+    import:
+      - "optional:consul:"
+  profiles:
+    active:
+      - dev
+  cloud:
+    consul:
+#      config:
+#        enabled: true
+#        format: yaml
+#        watch:
+#          enabled: true
+      discovery:
+        health-check-url: http://host.docker.internal:${server.port}/actuator/health
+        instance-id: ${spring.application.name}:${random.int}
+        prefer-ip-address: true
+    gateway:
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+              lower-case-service-id: true
+          routes:
+            - id: order-service
+              uri: lb://order-service
+              predicates:
+                - Path=/my-orders/**
+              filters:
+                - RewritePath=/my-orders/?(?<segment>.*), /$\{segment}
+
+            - id: json-pls
+              uri: https://jsonplaceholder.typicode.com
+              predicates:
+                - Path=/jph/**
+              filters:
+                - RewritePath=/jph/?(?<segment>.*), /$\{segment}
+
+            - id: next-js
+              uri: http://localhost:3000
+              predicates:
+                - Path=/**
+#              filters:
+#                - RewritePath=/jph/?(?<segment>.*), /$\{segment}
+#          default-filters:
+#            - saveSession
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health, gateway"
+  endpoint:
+    gateway:
+      access: read_only
+
+server:
+  port: 9999

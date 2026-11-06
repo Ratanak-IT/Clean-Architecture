@@ -19,10 +19,12 @@ dependencies {
 //    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
     //grpc server
-    implementation 'net.devh:grpc-server-spring-boot-starter:3.1.0.RELEASE'
-    runtimeOnly 'io.grpc:grpc-services:1.85.1'
-
+    implementation 'org.springframework.boot:spring-boot-starter-grpc-server'
+    implementation 'org.springframework.boot:spring-boot-starter-grpc-client'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 //    Oauth2 dependency
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
 }
 

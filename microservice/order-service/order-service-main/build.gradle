@@ -21,12 +21,18 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.springframework.cloud:spring-cloud-starter-consul-config'
-
-//    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
     implementation 'org.springframework.cloud:spring-cloud-starter-consul-discovery'
+//    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+
     //add anotation liguibase core
     implementation 'org.liquibase:liquibase-core'
 
+    // gRPC
+    implementation 'kh.edu.istad:istad-common-grpc'
+    implementation 'org.springframework.boot:spring-boot-starter-grpc-server'
+    implementation 'org.springframework.boot:spring-boot-starter-grpc-client'
+    implementation 'org.springframework.grpc:spring-grpc-spring-boot-starter'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
     //security
     implementation 'org.springframework.boot:spring-boot-starter-security'
 

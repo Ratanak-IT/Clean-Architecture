@@ -6,7 +6,9 @@ import kh.edu.istad.platform.order.client.httpclient.CustomerHttpClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 import org.springframework.http.HttpStatusCode;
+import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
 import org.springframework.security.oauth2.client.AuthorizedClientServiceReactiveOAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientService;
@@ -18,6 +20,8 @@ import org.springframework.web.reactive.function.client.support.WebClientHttpSer
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import org.springframework.web.service.registry.HttpServiceGroup;
 import org.springframework.web.service.registry.ImportHttpServices;
+
+import java.util.function.Supplier;
 
 @Configuration
 @RequiredArgsConstructor
@@ -40,7 +44,6 @@ public class ClientConfig {
             ReactiveOAuth2AuthorizedClientManager authorizedClientManager){
         return OAuth2WebClientHttpServiceGroupConfigurer.from(authorizedClientManager);
     }
-
 
 
     @Bean

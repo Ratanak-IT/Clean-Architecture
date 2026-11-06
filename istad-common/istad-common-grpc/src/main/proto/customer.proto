@@ -1,14 +1,24 @@
 syntax = "proto3";
+
 package customer;
-option java_package = "com.example.customerservice.grpc";
+
+option java_package = "kh.edu.istad.customerservice.grpc";
 option java_multiple_files = true;
 
 service CustomerService {
   rpc GetCustomerById (GetCustomerRequest) returns (CustomerGetResponse);
+  rpc GetAllCustomer (GetAllCustomerRequest) returns (stream CustomerGetResponse);
+  rpc GetCustomerByUsername (GetCustomerByUsernameRequest) returns (CustomerGetResponse);
 }
 
 message GetCustomerRequest {
   string id = 1;
+}
+
+message GetAllCustomerRequest {}
+
+message GetCustomerByUsernameRequest {
+  string username = 1;
 }
 
 message CustomerGetResponse {

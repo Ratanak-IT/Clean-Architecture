@@ -19,7 +19,6 @@ public class SecurityConfig {
                 .authorizeExchange(exchanges -> exchanges
                         .anyExchange().permitAll()
                 );
-
         return http.build();
     }
 }
