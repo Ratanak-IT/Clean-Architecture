@@ -2,6 +2,13 @@ plugins {
     id 'spring-cloud-common-conventions'
 }
 
+dependencyManagement {
+    dependencies {
+        dependency 'com.google.protobuf:protobuf-java:4.36.2'
+        dependency 'com.google.protobuf:protobuf-java-util:4.36.2'
+    }
+}
+
 dependencies {
 
     implementation 'kh.edu.istad:istad-common-swagger'
@@ -22,6 +29,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.springframework.cloud:spring-cloud-starter-consul-config'
     implementation 'org.springframework.cloud:spring-cloud-starter-consul-discovery'
+
+    implementation 'build.buf.gen:iteistad_customer-service_grpc_java:1.85.1.1.20261106032745.bc2a767779f7'
+    implementation('build.buf.gen:iteistad_customer-service_protocolbuffers_java:36.2.0.1.20261106032745.bc2a767779f7')
+
 //    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
     //add anotation liguibase core

@@ -64,6 +64,14 @@
               <build path="$PROJECT_DIR$/microservice/im-server" name="im-server">
                 <projects>
                   <project path="$PROJECT_DIR$/microservice/im-server" />
+                  <project path="$PROJECT_DIR$/microservice/im-server/iam-domain" />
+                  <project path="$PROJECT_DIR$/microservice/im-server/iam-domain/iam-application-service" />
+                  <project path="$PROJECT_DIR$/microservice/im-server/iam-domain/iam-domain-core" />
+                  <project path="$PROJECT_DIR$/microservice/im-server/iam-infrastructure" />
+                  <project path="$PROJECT_DIR$/microservice/im-server/iam-main" />
+                  <project path="$PROJECT_DIR$/microservice/im-server/iam-persistence" />
+                  <project path="$PROJECT_DIR$/microservice/im-server/iam-rest-api" />
+                  <project path="$PROJECT_DIR$/microservice/im-server/iam-web" />
                 </projects>
               </build>
               <build path="$PROJECT_DIR$/microservice/order-service" name="order-service">
@@ -92,8 +100,6 @@
             </builds>
           </compositeBuild>
         </compositeConfiguration>
-        <option name="delegatedBuild" value="false" />
-        <option name="testRunner" value="PLATFORM" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="gradleJvm" value="#JAVA_HOME" />
         <option name="modules">
@@ -126,6 +132,14 @@
             <option value="$PROJECT_DIR$/microservice/eureka-server" />
             <option value="$PROJECT_DIR$/microservice/gateway-server" />
             <option value="$PROJECT_DIR$/microservice/im-server" />
+            <option value="$PROJECT_DIR$/microservice/im-server/iam-domain" />
+            <option value="$PROJECT_DIR$/microservice/im-server/iam-domain/iam-application-service" />
+            <option value="$PROJECT_DIR$/microservice/im-server/iam-domain/iam-domain-core" />
+            <option value="$PROJECT_DIR$/microservice/im-server/iam-infrastructure" />
+            <option value="$PROJECT_DIR$/microservice/im-server/iam-main" />
+            <option value="$PROJECT_DIR$/microservice/im-server/iam-persistence" />
+            <option value="$PROJECT_DIR$/microservice/im-server/iam-rest-api" />
+            <option value="$PROJECT_DIR$/microservice/im-server/iam-web" />
             <option value="$PROJECT_DIR$/microservice/order-service" />
             <option value="$PROJECT_DIR$/microservice/order-service/order-service-client" />
             <option value="$PROJECT_DIR$/microservice/order-service/order-service-domain" />
@@ -141,27 +155,6 @@
             <option value="$PROJECT_DIR$/microservice/payment-service/payment-service-main" />
             <option value="$PROJECT_DIR$/microservice/payment-service/payment-service-persistence" />
             <option value="$PROJECT_DIR$/microservice/payment-service/payment-service-restapi" />
-          </set>
-        </option>
-      </GradleProjectSettings>
-      <GradleProjectSettings>
-        <compositeConfiguration>
-          <compositeBuild compositeDefinitionSource="SCRIPT">
-            <builds>
-              <build path="$PROJECT_DIR$/build-logic" name="build-logic">
-                <projects>
-                  <project path="$PROJECT_DIR$/build-logic" />
-                </projects>
-              </build>
-            </builds>
-          </compositeBuild>
-        </compositeConfiguration>
-        <option name="externalProjectPath" value="$PROJECT_DIR$/microservice/gateway-server" />
-        <option name="gradleJvm" value="#JAVA_HOME" />
-        <option name="modules">
-          <set>
-            <option value="$PROJECT_DIR$/build-logic" />
-            <option value="$PROJECT_DIR$/microservice/gateway-server" />
           </set>
         </option>
       </GradleProjectSettings>

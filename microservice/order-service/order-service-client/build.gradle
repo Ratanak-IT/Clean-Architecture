@@ -2,17 +2,20 @@ plugins {
     id 'spring-cloud-common-conventions'
 }
 
-sourceSets {
-    main.java.srcDir 'build/generated/buf'
-}
+//sourceSets {
+//    main.java.srcDir 'build/generated/buf'
+//}
 
 dependencies {
     implementation project(':order-service-domain:order-application-service')
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
-    implementation 'kh.edu.istad:istad-common-grpc'
+//    implementation 'kh.edu.istad:istad-common-grpc'
     implementation 'org.springframework.boot:spring-boot-starter-grpc-client'
+
+    implementation 'build.buf.gen:iteistad_customer-service_grpc_java:1.85.1.1.20261106032745.bc2a767779f7'
+    implementation('build.buf.gen:iteistad_customer-service_protocolbuffers_java:36.2.0.1.20261106032745.bc2a767779f7')
 
 //    implementation libs.bundles.grpc
 //    runtimeOnly libs.grpc.netty.shaded

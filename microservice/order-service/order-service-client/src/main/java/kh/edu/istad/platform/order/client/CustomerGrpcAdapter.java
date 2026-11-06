@@ -1,5 +1,9 @@
 package kh.edu.istad.platform.order.client;
 
+import build.buf.gen.customer.CustomerGetResponse;
+import build.buf.gen.customer.CustomerServiceGrpc;
+import build.buf.gen.customer.GetAllCustomerRequest;
+import build.buf.gen.customer.GetCustomerRequest;
 import io.grpc.StatusRuntimeException;
 import io.grpc.Status;
 import io.grpc.Metadata;
@@ -7,10 +11,6 @@ import io.grpc.stub.MetadataUtils;
 import kh.edu.istad.common.domain.exception.ResourceNotFoundException;
 import kh.edu.istad.common.domain.valueobject.CustomerId;
 
-import kh.edu.istad.customerservice.grpc.CustomerGetResponse;
-import kh.edu.istad.customerservice.grpc.CustomerServiceGrpc;
-import kh.edu.istad.customerservice.grpc.GetAllCustomerRequest;
-import kh.edu.istad.customerservice.grpc.GetCustomerRequest;
 import kh.edu.istad.platform.order.domain.dto.CustomerResult;
 import kh.edu.istad.platform.order.domain.port.out.CustomerRepository;
 import kh.edu.istad.platform.order.client.exception.DownStreamServiceException;

@@ -3,6 +3,14 @@ plugins {
     id 'com.google.protobuf' version '0.9.6'
 }
 
+repositories {
+    mavenCentral()
+    maven {
+        name = 'buf'
+        url 'https://buf.build/gen/maven'
+    }
+}
+
 protobuf {
     protoc {
         artifact = 'com.google.protobuf:protoc:4.29.3'
@@ -26,4 +34,6 @@ dependencies {
     implementation libs.bundles.grpc
     compileOnly libs.tomcat.annotations.api
     compileOnly 'org.apache.tomcat:annotations-api:6.0.53'
+    implementation 'build.buf.gen:iteistad_customer-service_grpc_java:1.85.1.1.20261106032745.bc2a767779f7'
+    implementation('build.buf.gen:iteistad_customer-service_protocolbuffers_java:36.2.0.1.20261106032745.bc2a767779f7')
 }

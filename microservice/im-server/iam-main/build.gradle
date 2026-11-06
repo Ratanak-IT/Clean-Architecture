@@ -1,0 +1,15 @@
+plugins {
+    id 'springboot-common-conventions'
+}
+
+dependencies {
+    implementation project(':iam-domain:iam-application-service')
+    implementation project(':iam-domain:iam-domain-core')
+    implementation project(':iam-persistence')
+    implementation project(':iam-infrastructure')
+    implementation project(':iam-rest-api')
+    implementation project(':iam-web')
+
+    implementation 'org.springframework.boot:spring-boot-starter-liquibase'
+    runtimeOnly 'org.postgresql:postgresql'
+}

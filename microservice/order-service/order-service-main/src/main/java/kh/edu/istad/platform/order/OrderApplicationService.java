@@ -1,6 +1,6 @@
 package kh.edu.istad.platform.order;
 
-import kh.edu.istad.customerservice.grpc.CustomerServiceGrpc;
+import build.buf.gen.customer.CustomerServiceGrpc;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.grpc.client.ImportGrpcClients;

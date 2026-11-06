@@ -1,15 +1,15 @@
 package kh.edu.istad.platform.customer.grpc;
 
 
+import build.buf.gen.customer.CustomerGetResponse;
+import build.buf.gen.customer.CustomerServiceGrpc;
+import build.buf.gen.customer.GetAllCustomerRequest;
+import build.buf.gen.customer.GetCustomerRequest;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import kh.edu.istad.common.domain.valueobject.CustomerId;
 import kh.edu.istad.common.domain.exception.ResourceNotFoundException;
-import kh.edu.istad.customerservice.grpc.CustomerServiceGrpc;
 import kh.edu.istad.platform.customer.domain.port.out.CustomerMonoRepository;
-import kh.edu.istad.customerservice.grpc.CustomerGetResponse;
-import kh.edu.istad.customerservice.grpc.GetAllCustomerRequest;
-import kh.edu.istad.customerservice.grpc.GetCustomerRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.grpc.server.service.GrpcService;
 
@@ -44,6 +44,7 @@ public class CustomerServiceImpl extends CustomerServiceGrpc.CustomerServiceImpl
                                         .withDescription(error.getMessage())
                                         .asRuntimeException()));
     }
+
 
     @Override
     public void getAllCustomer(GetAllCustomerRequest request, StreamObserver<CustomerGetResponse> responseObserver) {
