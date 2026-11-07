@@ -1,4 +1,4 @@
-package kh.edu.istad.platform.authorization.domain.port.out;
+package kh.edu.istad.platform.authorization.domain.port.out.role;
 
 import kh.edu.istad.platform.authorization.domain.entity.Role;
 

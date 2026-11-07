@@ -1,4 +1,4 @@
-package kh.edu.istad.platform.authorization.domain.port.out;
+package kh.edu.istad.platform.authorization.domain.port.out.identity;
 
 import kh.edu.istad.platform.authorization.domain.entity.Identity;
 import kh.edu.istad.platform.authorization.domain.valueobject.IdentityProviderType;

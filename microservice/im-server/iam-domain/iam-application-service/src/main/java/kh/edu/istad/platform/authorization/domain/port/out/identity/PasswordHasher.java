@@ -1,4 +1,4 @@
-package kh.edu.istad.platform.authorization.domain.port.out;
+package kh.edu.istad.platform.authorization.domain.port.out.identity;
 
 // Implemented by iam-infrastructure using Spring Security's PasswordEncoder.
 public interface PasswordHasher {

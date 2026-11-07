@@ -8,27 +8,24 @@ spring:
         registration:
           github:
             provider: github
-            client-id: Ov23liLrbVWPumDopPRF
-            client-secret: fc5af3695c7606d34966e9ef69eb73960595f5f5
+            client-id: ${GITHUB_CLIENT_ID}
+            client-secret: ${GITHUB_CLIENT_SECRET}
             client-name: oAuth2
           google:
-            client-id: 361854801058-mi8l1dh2ms6lhvqv4isu0trka6sbkogv.apps.googleusercontent.com
-            client-secret: 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
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
             scope:
               - profile
               - email
-
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
 
       authorizationserver:
         issuer: http://localhost:9000
 
-
-
   datasource:
-    url: jdbc:postgresql://localhost:2222/oauth-postgres
-    username: iteuser
-    password: qwerqwer
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -43,7 +40,7 @@ spring:
     change-log: classpath:/db/changelog/db.changelog-master.yaml
 
 server:
-  port: 9000
+  port: ${SERVER_PORT:9000}
 
 logging:
   level:

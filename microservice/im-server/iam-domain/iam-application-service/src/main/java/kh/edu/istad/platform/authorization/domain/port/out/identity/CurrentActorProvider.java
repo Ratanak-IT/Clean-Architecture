@@ -1,4 +1,4 @@
-package kh.edu.istad.platform.authorization.domain.port.out;
+package kh.edu.istad.platform.authorization.domain.port.out.identity;
 
 import java.util.Optional;
 import java.util.UUID;

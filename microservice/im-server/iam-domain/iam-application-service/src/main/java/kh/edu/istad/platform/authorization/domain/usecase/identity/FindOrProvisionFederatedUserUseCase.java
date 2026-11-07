@@ -1,13 +1,13 @@
 package kh.edu.istad.platform.authorization.domain.usecase.identity;
 
-import kh.edu.istad.platform.authorization.domain.dto.identity.FederatedUserCommand;
-import kh.edu.istad.platform.authorization.domain.dto.identity.AuthUserResult;
+import kh.edu.istad.platform.authorization.domain.dto.identity.command.FederatedUserCommand;
+import kh.edu.istad.platform.authorization.domain.dto.identity.result.AuthUserResult;
 import kh.edu.istad.platform.authorization.domain.entity.Identity;
 import kh.edu.istad.platform.authorization.domain.entity.Permission;
 import kh.edu.istad.platform.authorization.domain.entity.Role;
 import kh.edu.istad.platform.authorization.domain.entity.User;
-import kh.edu.istad.platform.authorization.domain.port.out.IdentityRepository;
-import kh.edu.istad.platform.authorization.domain.port.out.UserRepository;
+import kh.edu.istad.platform.authorization.domain.port.out.identity.IdentityRepository;
+import kh.edu.istad.platform.authorization.domain.port.out.user.UserRepository;
 import kh.edu.istad.platform.authorization.domain.valueobject.Email;
 import kh.edu.istad.platform.authorization.domain.valueobject.IdentityProviderType;
 import kh.edu.istad.platform.authorization.domain.valueobject.Username;

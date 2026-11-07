@@ -68,6 +68,12 @@ public interface UserPersistenceMapper {
         if (ur == null || ur.getRole() == null) {
             return null;
         }
+        if (ur.getRevokedAt() != null) {
+            return null;
+        }
+        if (ur.getExpiresAt() != null && ur.getExpiresAt().isBefore(java.time.Instant.now())) {
+            return null;
+        }
         RoleEntity re = ur.getRole();
         return Role.builder()
                 .id(re.getId())
@@ -83,6 +89,12 @@ public interface UserPersistenceMapper {
 
     default Permission mapUserPermission(UserPermissionEntity up) {
         if (up == null || up.getPermission() == null) {
+            return null;
+        }
+        if (up.getRevokedAt() != null) {
+            return null;
+        }
+        if (up.getExpiresAt() != null && up.getExpiresAt().isBefore(java.time.Instant.now())) {
             return null;
         }
         PermissionEntity pe = up.getPermission();
@@ -102,39 +114,35 @@ public interface UserPersistenceMapper {
 
     @AfterMapping
     default void linkRolesAndPermissions(User domain, @MappingTarget UserEntity entity) {
-        if (domain != null) {
-            if (domain.getRoles() != null) {
-                domain.getRoles().forEach(r -> {
-                    RoleEntity roleEntity = RoleEntity.builder()
-                            .id(r.getId())
-                            .uuid(r.getUuid())
-                            .name(r.getName())
-                            .description(r.getDescription())
-                            .isSystem(r.isSystem())
-                            .isActive(r.isActive())
-                            .isDeleted(r.isDeleted())
-                            .version(r.getVersion())
-                            .build();
-                    entity.addRole(roleEntity);
-                });
+        if (domain == null) return;
+        if (domain.getRoles() != null) {
+            java.util.Set<String> domainRoleNames = domain.getRoles().stream()
+                    .map(Role::getName)
+                    .collect(java.util.stream.Collectors.toSet());
+            if (entity.getUserRoles() != null) {
+                entity.getUserRoles().stream()
+                        .filter(ur -> ur.getRole() != null && ur.getRevokedAt() == null)
+                        .filter(ur -> !domainRoleNames.contains(ur.getRole().getName()))
+                        .forEach(ur -> {
+                            ur.setRevokedAt(java.time.Instant.now());
+                            ur.setRevokedBy("SYSTEM");
+                            ur.setReason("Role removed from user domain model");
+                        });
             }
-            if (domain.getPermissions() != null) {
-                domain.getPermissions().forEach(p -> {
-                    PermissionEntity permissionEntity = PermissionEntity.builder()
-                            .id(p.getId())
-                            .uuid(p.getUuid())
-                            .name(p.getName())
-                            .resource(p.getResource())
-                            .action(p.getAction())
-                            .description(p.getDescription())
-                            .isSystem(p.isSystem())
-                            .isActive(p.isActive())
-                            .isDeleted(p.isDeleted())
-                            .version(p.getVersion())
-                            .build();
-                    entity.addPermission(permissionEntity, "GRANT");
-                });
-            }
+            // Assign new role
+            domain.getRoles().forEach(r -> {
+                RoleEntity roleEntity = RoleEntity.builder()
+                        .id(r.getId())
+                        .uuid(r.getUuid())
+                        .name(r.getName())
+                        .description(r.getDescription())
+                        .isSystem(r.isSystem())
+                        .isActive(r.isActive())
+                        .isDeleted(r.isDeleted())
+                        .version(r.getVersion())
+                        .build();
+                entity.addRole(roleEntity, "SYSTEM");
+            });
         }
     }
 }

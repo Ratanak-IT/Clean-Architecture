@@ -42,23 +42,34 @@ public class RoleEntity extends AuditableEntity {
     private Long version;
 
     @Builder.Default
-    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
     private Set<RolePermissionEntity> rolePermissions = new HashSet<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "role")
     private Set<UserRoleEntity> userRoles = new HashSet<>();
 
-    public void addPermission(PermissionEntity permission) {
-        RolePermissionEntity rolePermission = RolePermissionEntity.builder()
-                .role(this)
-                .permission(permission)
-                .assignedAt(Instant.now())
-                .build();
-        rolePermissions.add(rolePermission);
+    public void addPermission(PermissionEntity permission, String assignedBy) {
+        boolean alreadyActive = rolePermissions.stream()
+                .anyMatch(rp -> rp.getPermission() != null && rp.getPermission().equals(permission) && rp.getRevokedAt() == null);
+        if (!alreadyActive) {
+            RolePermissionEntity rolePermission = RolePermissionEntity.builder()
+                    .role(this)
+                    .permission(permission)
+                    .assignedAt(Instant.now())
+                    .assignedBy(assignedBy)
+                    .build();
+            rolePermissions.add(rolePermission);
+        }
     }
 
-    public void removePermission(PermissionEntity permission) {
-        rolePermissions.removeIf(rp -> rp.getPermission() != null && rp.getPermission().equals(permission));
+    public void revokePermission(PermissionEntity permission, String revokedBy, String reason) {
+        rolePermissions.stream()
+                .filter(rp -> rp.getPermission() != null && rp.getPermission().equals(permission) && rp.getRevokedAt() == null)
+                .forEach(rp -> {
+                    rp.setRevokedAt(Instant.now());
+                    rp.setRevokedBy(revokedBy);
+                    rp.setReason(reason);
+                });
     }
 }

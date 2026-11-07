@@ -121,18 +121,30 @@ public class UserEntity extends AuditableEntity {
     private Long version;
 
     @Builder.Default
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<UserRoleEntity> userRoles = new HashSet<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<UserPermissionEntity> userPermissions = new HashSet<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<IdentityEntity> identities = new HashSet<>();
 
-    public void addRole(RoleEntity role) {
+    public void addRole(RoleEntity role, String assignBy) {
+        boolean alreadyActive = userRoles.stream()
+                .anyMatch(ur -> ur.getRole() != null && ur.getRole().equals(role)
+                && ur.getRevokedAt() == null );
+        if (alreadyActive){
+            UserRoleEntity userRole = UserRoleEntity.builder()
+                    .user(this)
+                    .role(role)
+                    .assignedAt(Instant.now())
+                    .assignedBy(assignBy)
+                    .build();
+            userRoles.add(userRole);
+        }
         UserRoleEntity userRole = UserRoleEntity.builder()
                 .user(this)
                 .role(role)
@@ -141,21 +153,46 @@ public class UserEntity extends AuditableEntity {
         userRoles.add(userRole);
     }
 
-    public void removeRole(RoleEntity role) {
-        userRoles.removeIf(ur -> ur.getRole() != null && ur.getRole().equals(role));
+
+    public void revokeRole(RoleEntity role, String revokedBy, String reason) {
+        userRoles.stream()
+                .filter(ur -> ur.getRole() != null
+                        && ur.getRole().equals(role)
+                        && ur.getRevokedAt() == null)
+                .forEach(ur -> {
+                    ur.setRevokedAt(Instant.now());
+                    ur.setRevokedBy(revokedBy);
+                    ur.setReason(reason);
+                });
     }
 
-    public void addPermission(PermissionEntity permission, String effect) {
-        UserPermissionEntity userPermission = UserPermissionEntity.builder()
-                .user(this)
-                .permission(permission)
-                .effect(effect != null ? effect : "GRANT")
-                .assignedAt(Instant.now())
-                .build();
-        userPermissions.add(userPermission);
+    public void addPermission(PermissionEntity permission, String effect, String assignedBy) {
+        boolean alreadyActive = userPermissions.stream()
+                .anyMatch(up -> up.getPermission() != null
+                        && up.getPermission().equals(permission)
+                        && up.getRevokedAt() == null);
+        if (!alreadyActive) {
+            UserPermissionEntity userPermission = UserPermissionEntity.builder()
+                    .user(this)
+                    .permission(permission)
+                    .effect(effect != null ? effect : "GRANT")
+                    .assignedAt(Instant.now())
+                    .assignedBy(assignedBy)
+                    .build();
+            userPermissions.add(userPermission);
+        }
     }
 
-    public void removePermission(PermissionEntity permission) {
-        userPermissions.removeIf(up -> up.getPermission() != null && up.getPermission().equals(permission));
+    public void revokePermission(PermissionEntity permission, String revokedBy, String reason) {
+        userPermissions.stream()
+                .filter(up -> up.getPermission() != null
+                        && up.getPermission().equals(permission)
+                        && up.getRevokedAt() == null)
+                .forEach(up -> {
+                    up.setRevokedAt(Instant.now());
+                    up.setRevokedBy(revokedBy);
+                    up.setReason(reason);
+                });
     }
+
 }
