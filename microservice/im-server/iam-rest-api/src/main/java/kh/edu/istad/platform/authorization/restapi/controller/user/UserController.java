@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -89,9 +90,7 @@ public class UserController {
                 .sortBy(sortBy)
                 .sortDirection(sortDirection)
                 .build();
-
         PageResult<UserSummary> pageResult = listUsersUseCase.execute(query);
-
         return userRestMapper.toResponse(pageResult);
     }
 
@@ -172,7 +171,7 @@ public class UserController {
     public void revokeRoleFromUser(
             @PathVariable("uuid") UUID uuid,
             @PathVariable("roleUuid") UUID roleUuid,
-            @RequestParam(required = false, defaultValue = "Revoked by admin") String reason
+            @RequestParam(name = "reason", required = false, defaultValue = "Revoked by admin") String reason
     ) {
         revokeRoleFromUserUseCase.execute(uuid, roleUuid, reason);
     }

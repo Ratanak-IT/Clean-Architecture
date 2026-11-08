@@ -9,6 +9,7 @@ import kh.edu.istad.platform.authorization.domain.port.out.permission.Permission
 import kh.edu.istad.platform.authorization.persistence.entity.PermissionEntity;
 import kh.edu.istad.platform.authorization.persistence.mapper.PermissionPersistenceMapper;
 import kh.edu.istad.platform.authorization.persistence.repository.PermissionJpaRepository;
+import kh.edu.istad.platform.authorization.persistence.specification.PermissionSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -49,36 +50,7 @@ public class PermissionRepositoryAdapter implements PermissionRepository {
 
     @Override
     public PageResult<Permission> findAll(PermissionFilterQuery query) {
-        Specification<PermissionEntity> spec = (root, criteriaQuery, cb) -> {
-            List<Predicate> predicates = new ArrayList<>();
-
-            predicates.add(cb.isFalse(root.get("isDeleted")));
-
-            if (query.resource() != null && !query.resource().isBlank()) {
-                predicates.add(cb.equal(root.get("resource"), query.resource()));
-            }
-
-            if (query.action() != null && !query.action().isBlank()) {
-                predicates.add(cb.equal(root.get("action"), query.action()));
-            }
-
-            if (query.active() != null) {
-                predicates.add(cb.equal(root.get("isActive"), query.active()));
-            }
-
-            if (query.system() != null) {
-                predicates.add(cb.equal(root.get("isSystem"), query.system()));
-            }
-
-            if (query.search() != null && !query.search().isBlank()) {
-                String pattern = "%" + query.search().toLowerCase() + "%";
-                Predicate nameMatch = cb.like(cb.lower(root.get("name")), pattern);
-                Predicate descMatch = cb.like(cb.lower(root.get("description")), pattern);
-                predicates.add(cb.or(nameMatch, descMatch));
-            }
-
-            return cb.and(predicates.toArray(new Predicate[0]));
-        };
+        Specification<PermissionEntity> spec = PermissionSpecification.filter(query);
 
         Sort sort = Sort.by(
                 "DESC".equalsIgnoreCase(query.sortDirection()) ? Sort.Direction.DESC : Sort.Direction.ASC,

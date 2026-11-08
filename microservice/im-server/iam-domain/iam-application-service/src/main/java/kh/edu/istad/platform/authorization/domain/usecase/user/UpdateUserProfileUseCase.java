@@ -7,22 +7,32 @@ import kh.edu.istad.platform.authorization.domain.mapper.UserDomainMapper;
 import kh.edu.istad.platform.authorization.domain.port.out.identity.CurrentActorProvider;
 import kh.edu.istad.platform.authorization.domain.port.out.user.UserRepository;
 import kh.edu.istad.platform.authorization.domain.valueobject.PhoneNumber;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.UUID;
 
-@Slf4j
 @Component
-@RequiredArgsConstructor
 public class UpdateUserProfileUseCase {
+
+    private static final Logger log = LoggerFactory.getLogger(UpdateUserProfileUseCase.class);
 
     private final UserRepository userRepository;
     private final UserDomainMapper userDomainMapper;
     private final CurrentActorProvider currentActorProvider;
+
+    public UpdateUserProfileUseCase(
+            UserRepository userRepository,
+            UserDomainMapper userDomainMapper,
+            CurrentActorProvider currentActorProvider
+    ) {
+        this.userRepository = userRepository;
+        this.userDomainMapper = userDomainMapper;
+        this.currentActorProvider = currentActorProvider;
+    }
 
     @Transactional
     public UserResult execute(UpdateUserProfileCommand command) {
@@ -34,6 +44,9 @@ public class UpdateUserProfileUseCase {
 
         if (command.givenName() != null) {
             user.setGivenName(command.givenName());
+        }
+        if (command.familyName() != null) {
+            user.setFamilyName(command.familyName());
         }
         if (command.nickname() != null) {
             user.setNickname(command.nickname());

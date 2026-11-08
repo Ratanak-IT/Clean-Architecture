@@ -18,6 +18,13 @@ spring:
               - profile
               - email
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+          facebook:
+            client-id: ${FACEBOOK_CLIENT_ID}
+            client-secret: ${FACEBOOK_CLIENT_SECRET}
+            scope:
+              - public_profile
+              - email
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
 
       authorizationserver:
         issuer: http://localhost:9000
@@ -41,6 +48,16 @@ spring:
 
 server:
   port: ${SERVER_PORT:9000}
+
+gg:
+  jte:
+    development-mode: true
+    template-location: microservice/im-server/iam-web/src/main/jte
+
+
+telegram:
+  bot-token: ${TELEGRAM_BOT_TOKEN:}
+  bot-username: ${TELEGRAM_BOT_USERNAME:}
 
 logging:
   level:

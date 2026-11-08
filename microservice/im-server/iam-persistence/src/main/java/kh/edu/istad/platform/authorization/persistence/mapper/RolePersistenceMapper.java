@@ -9,8 +9,9 @@ import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface RolePersistenceMapper {
 
     @Mapping(target = "permissions", source = "rolePermissions")
@@ -26,7 +27,7 @@ public interface RolePersistenceMapper {
     RoleEntity toEntity(Role domain);
 
     default Permission mapRolePermission(RolePermissionEntity rp) {
-        if (rp == null || rp.getPermission() == null) {
+        if (rp == null || rp.getPermission() == null || rp.getRevokedAt() != null) {
             return null;
         }
         PermissionEntity pe = rp.getPermission();
@@ -42,26 +43,5 @@ public interface RolePersistenceMapper {
                 .deleted(pe.isDeleted())
                 .version(pe.getVersion())
                 .build();
-    }
-
-    @AfterMapping
-    default void linkPermissions(Role domain, @MappingTarget RoleEntity entity) {
-        if (domain != null && domain.getPermissions() != null) {
-            for (Permission p : domain.getPermissions()) {
-                PermissionEntity pe = PermissionEntity.builder()
-                        .id(p.getId())
-                        .uuid(p.getUuid())
-                        .name(p.getName())
-                        .resource(p.getResource())
-                        .action(p.getAction())
-                        .description(p.getDescription())
-                        .isSystem(p.isSystem())
-                        .isActive(p.isActive())
-                        .isDeleted(p.isDeleted())
-                        .version(p.getVersion())
-                        .build();
-                entity.addPermission(pe, domain.getUpdatedBy() != null ? domain.getUpdatedBy() : "system");
-            }
-        }
     }
 }

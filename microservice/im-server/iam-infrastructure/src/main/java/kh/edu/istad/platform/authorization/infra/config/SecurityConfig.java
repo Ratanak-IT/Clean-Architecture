@@ -15,6 +15,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.config.Customizer;
@@ -22,6 +23,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.Jwt;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.oauth2.server.authorization.oidc.authentication.OidcClientRegistrationAuthenticationProvider;
+import org.springframework.security.oauth2.server.authorization.oidc.authentication.OidcClientRegistrationAuthenticationToken;
+import org.springframework.security.oauth2.server.authorization.oidc.authentication.OidcClientRegistrationAuthenticationValidator;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationConsentService;
@@ -36,6 +41,7 @@ import org.springframework.security.oauth2.server.authorization.settings.Authori
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
+import tools.jackson.databind.ObjectMapper;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -67,7 +73,37 @@ public class SecurityConfig {
                                 .authorizationEndpoint(authorizationEndpoint ->
                                         authorizationEndpoint.consentPage("/oauth2/consent")
                                 )
-                                .oidc(Customizer.withDefaults())
+                                .oidc(oidc -> oidc.clientRegistrationEndpoint(clientRegistrationEndpoint -> {
+                                        clientRegistrationEndpoint.authenticationProviders(providers -> {
+                                            for (AuthenticationProvider provider : providers) {
+                                                if (provider instanceof OidcClientRegistrationAuthenticationProvider regProvider) {
+                                                    regProvider.setAuthenticationValidator(
+                                                            OidcClientRegistrationAuthenticationValidator.DEFAULT_REDIRECT_URI_VALIDATOR
+                                                                    .andThen(OidcClientRegistrationAuthenticationValidator.DEFAULT_POST_LOGOUT_REDIRECT_URI_VALIDATOR)
+                                                                    .andThen(OidcClientRegistrationAuthenticationValidator.DEFAULT_JWK_SET_URI_VALIDATOR)
+                                                                    .andThen(OidcClientRegistrationAuthenticationValidator.SIMPLE_SCOPE_VALIDATOR)
+                                                    );
+                                                }
+                                            }
+                                        });
+
+                                        clientRegistrationEndpoint.clientRegistrationResponseHandler((request, response, authentication) -> {
+                                            if (authentication instanceof OidcClientRegistrationAuthenticationToken registrationAuth) {
+                                                java.util.Map<String, Object> claims = registrationAuth.getClientRegistration().getClaims();
+                                                java.util.Map<String, Object> filtered = new java.util.LinkedHashMap<>();
+
+                                                for (String key : List.of("client_id", "client_secret", "client_name", "redirect_uris", "registration_access_token", "registration_client_uri")) {
+                                                    if (claims.containsKey(key)) {
+                                                        filtered.put(key, claims.get(key));
+                                                    }
+                                                }
+
+                                                response.setStatus(HttpServletResponse.SC_CREATED);
+                                                response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                                                new ObjectMapper().writeValue(response.getOutputStream(), filtered);
+                                            }
+                                        });
+                                }))
                 )
                 .authorizeHttpRequests((authorize) ->
                         authorize
@@ -78,7 +114,8 @@ public class SecurityConfig {
                                 new LoginUrlAuthenticationEntryPoint("/login"),
                                 new MediaTypeRequestMatcher(MediaType.TEXT_HTML)
                         )
-                );
+                )
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
 
         return http.build();
     }
@@ -99,7 +136,7 @@ public class SecurityConfig {
                 .requestCache(cache -> cache.requestCache(requestCache))
                 .authorizeHttpRequests((authorize) -> authorize
                         // 1. Static and Public Endpoints
-                        .requestMatchers("/", "/home", "/login", "/register", "/callback", "/.well-known/**", "/error", "/favicon.ico", "/images/**", "/css/**", "/js/**").permitAll()
+                        .requestMatchers("/login", "/register", "/callback", "/callback/**", "/.well-known/**", "/error", "/favicon.ico", "/images/**", "/css/**", "/js/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
 
                         // 2. Current User Endpoints (/api/me/**)
@@ -144,12 +181,21 @@ public class SecurityConfig {
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt ->
                         jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)
                 ))
-                .formLogin(form -> form.loginPage("/login").permitAll())
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/", true)
+                        .permitAll()
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout")
+                        .permitAll()
+                )
                 .oauth2Login(oauth2 -> oauth2.loginPage("/login").permitAll()
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOauth2Service)
                                 .oidcUserService(customOidcUserService))
-                        .defaultSuccessUrl("/"));
+                        .defaultSuccessUrl("/", true));
 
         return http.build();
     }

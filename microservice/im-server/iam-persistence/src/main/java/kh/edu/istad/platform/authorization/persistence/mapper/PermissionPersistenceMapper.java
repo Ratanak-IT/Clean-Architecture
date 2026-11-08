@@ -4,8 +4,9 @@ import kh.edu.istad.platform.authorization.domain.entity.Permission;
 import kh.edu.istad.platform.authorization.persistence.entity.PermissionEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface PermissionPersistenceMapper {
 
     @Mapping(target = "users", ignore = true)

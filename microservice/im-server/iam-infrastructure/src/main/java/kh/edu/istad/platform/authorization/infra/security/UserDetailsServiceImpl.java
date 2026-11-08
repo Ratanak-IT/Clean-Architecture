@@ -1,7 +1,7 @@
 package kh.edu.istad.platform.authorization.infra.security;
 
-import kh.edu.istad.platform.authorization.persistence.entity.UserEntity;
-import kh.edu.istad.platform.authorization.persistence.repository.UserJpaRepository;
+import kh.edu.istad.platform.authorization.domain.dto.identity.result.AuthUserResult;
+import kh.edu.istad.platform.authorization.domain.usecase.user.LoadUserForAuthenticationUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -9,9 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,59 +17,38 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final UserJpaRepository userJpaRepository;
+    private final LoadUserForAuthenticationUseCase loadUserForAuthenticationUseCase;
 
     @Override
-    @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserEntity existing = userJpaRepository.findByUsernameOrEmail(username, username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with: " + username));
+        AuthUserResult user;
+        try {
+            user = loadUserForAuthenticationUseCase.execute(username);
+        } catch (Exception ex) {
+            throw new UsernameNotFoundException("User not found with: " + username, ex);
+        }
 
-        Set<GrantedAuthority> authorities = extractAuthorities(existing);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found with: " + username);
+        }
 
-        return new org.springframework.security.core.userdetails.User(
-                existing.getUsername(),
-                existing.getPasswordHash(),
-                existing.isEnabled(),
-                existing.isAccountNonExpired(),
-                existing.isCredentialsNonExpired(),
-                existing.isAccountNonLocked(),
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        if (user.roles() != null) {
+            user.roles().forEach(role -> authorities.add(new SimpleGrantedAuthority("ROLE_" + role)));
+        }
+        if (user.permissions() != null) {
+            user.permissions().forEach(perm -> authorities.add(new SimpleGrantedAuthority(perm)));
+        }
+
+        return new CustomUserDetails(
+                user.userUuid(),
+                user.username(),
+                user.passwordHash(),
+                user.enabled(),
+                user.accountNonExpired(),
+                user.accountNonLocked(),
+                user.credentialsNonExpired(),
                 authorities
         );
-    }
-
-    private static Set<GrantedAuthority> extractAuthorities(UserEntity user) {
-        Set<GrantedAuthority> authorities = new HashSet<>();
-        Instant now = Instant.now();
-        if (user.getUserPermissions() != null) {
-            user.getUserPermissions().forEach(userPermission -> {
-                if (userPermission.getPermission() != null && userPermission.getPermission().getName() != null) {
-                    if (userPermission.getRevokedAt() == null
-                            && (userPermission.getExpiresAt() == null || userPermission.getExpiresAt().isAfter(now))) {
-                        authorities.add(new SimpleGrantedAuthority(userPermission.getPermission().getName()));
-                    }
-                }
-            });
-        }
-        if (user.getUserRoles() != null) {
-            user.getUserRoles().forEach(userRole -> {
-                if (userRole.getRole() != null && userRole.getRole().getName() != null) {
-                    if (userRole.getRevokedAt() == null
-                            && (userRole.getExpiresAt() == null || userRole.getExpiresAt().isAfter(now))) {
-                        authorities.add(new SimpleGrantedAuthority("ROLE_" + userRole.getRole().getName()));
-                        if (userRole.getRole().getRolePermissions() != null) {
-                            userRole.getRole().getRolePermissions().forEach(rolePermission -> {
-                                if (rolePermission.getPermission() != null && rolePermission.getPermission().getName() != null) {
-                                    if (rolePermission.getRevokedAt() == null) {
-                                        authorities.add(new SimpleGrantedAuthority(rolePermission.getPermission().getName()));
-                                    }
-                                }
-                            });
-                        }
-                    }
-                }
-            });
-        }
-        return authorities;
     }
 }

@@ -4,7 +4,8 @@ import kh.edu.istad.common.domain.exception.DomainException;
 import kh.edu.istad.common.domain.exception.ResourceAlreadyExistsException;
 import kh.edu.istad.common.domain.exception.ResourceNotFoundException;
 import kh.edu.istad.platform.authorization.domain.exception.AuthorizationDomainException;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -21,10 +22,11 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @RestControllerAdvice(basePackages = "kh.edu.istad.platform.authorization.restapi")
 public class GlobalExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     private static final String BASE_PROBLEM_URL = "https://iam.istad.co/problems/";
 

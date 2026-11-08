@@ -50,9 +50,19 @@ public class RoleEntity extends AuditableEntity {
     private Set<UserRoleEntity> userRoles = new HashSet<>();
 
     public void addPermission(PermissionEntity permission, String assignedBy) {
-        boolean alreadyActive = rolePermissions.stream()
-                .anyMatch(rp -> rp.getPermission() != null && rp.getPermission().equals(permission) && rp.getRevokedAt() == null);
-        if (!alreadyActive) {
+        RolePermissionEntity existing = rolePermissions.stream()
+                .filter(rp -> rp.getPermission() != null
+                        && ((permission.getId() != null && permission.getId().equals(rp.getPermission().getId()))
+                            || (permission.getUuid() != null && permission.getUuid().equals(rp.getPermission().getUuid()))))
+                .findFirst()
+                .orElse(null);
+        if (existing != null) {
+            existing.setRevokedAt(null);
+            existing.setRevokedBy(null);
+            existing.setReason(null);
+            existing.setAssignedAt(Instant.now());
+            existing.setAssignedBy(assignedBy);
+        } else {
             RolePermissionEntity rolePermission = RolePermissionEntity.builder()
                     .role(this)
                     .permission(permission)
@@ -65,7 +75,10 @@ public class RoleEntity extends AuditableEntity {
 
     public void revokePermission(PermissionEntity permission, String revokedBy, String reason) {
         rolePermissions.stream()
-                .filter(rp -> rp.getPermission() != null && rp.getPermission().equals(permission) && rp.getRevokedAt() == null)
+                .filter(rp -> rp.getPermission() != null
+                        && ((permission.getId() != null && permission.getId().equals(rp.getPermission().getId()))
+                            || (permission.getUuid() != null && permission.getUuid().equals(rp.getPermission().getUuid())))
+                        && rp.getRevokedAt() == null)
                 .forEach(rp -> {
                     rp.setRevokedAt(Instant.now());
                     rp.setRevokedBy(revokedBy);

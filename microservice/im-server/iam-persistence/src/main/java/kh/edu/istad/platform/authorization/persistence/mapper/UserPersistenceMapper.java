@@ -8,6 +8,7 @@ import kh.edu.istad.platform.authorization.domain.valueobject.PhoneNumber;
 import kh.edu.istad.platform.authorization.domain.valueobject.Username;
 import kh.edu.istad.platform.authorization.persistence.entity.PermissionEntity;
 import kh.edu.istad.platform.authorization.persistence.entity.RoleEntity;
+import kh.edu.istad.platform.authorization.persistence.entity.RolePermissionEntity;
 import kh.edu.istad.platform.authorization.persistence.entity.UserEntity;
 import kh.edu.istad.platform.authorization.persistence.entity.UserPermissionEntity;
 import kh.edu.istad.platform.authorization.persistence.entity.UserRoleEntity;
@@ -15,6 +16,9 @@ import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Mapper(componentModel = "spring")
 public interface UserPersistenceMapper {
@@ -85,6 +89,30 @@ public interface UserPersistenceMapper {
             return null;
         }
         RoleEntity re = ur.getRole();
+
+        Set<Permission> permissions = new HashSet<>();
+        if (re.getRolePermissions() != null) {
+            for (RolePermissionEntity rp : re.getRolePermissions()) {
+                if (rp.getRevokedAt() == null && (rp.getExpiresAt() == null || rp.getExpiresAt().isAfter(java.time.Instant.now()))) {
+                    PermissionEntity pe = rp.getPermission();
+                    if (pe != null && pe.isActive() && !pe.isDeleted()) {
+                        permissions.add(Permission.builder()
+                                .id(pe.getId())
+                                .uuid(pe.getUuid())
+                                .name(pe.getName())
+                                .resource(pe.getResource())
+                                .action(pe.getAction())
+                                .description(pe.getDescription())
+                                .system(pe.isSystem())
+                                .active(pe.isActive())
+                                .deleted(pe.isDeleted())
+                                .version(pe.getVersion())
+                                .build());
+                    }
+                }
+            }
+        }
+
         return Role.builder()
                 .id(re.getId())
                 .uuid(re.getUuid())
@@ -94,6 +122,7 @@ public interface UserPersistenceMapper {
                 .active(re.isActive())
                 .deleted(re.isDeleted())
                 .version(re.getVersion())
+                .permissions(permissions)
                 .build();
     }
 
@@ -120,5 +149,17 @@ public interface UserPersistenceMapper {
                 .deleted(pe.isDeleted())
                 .version(pe.getVersion())
                 .build();
+    }
+
+    @AfterMapping
+    default void filterNulls(@MappingTarget User user) {
+        if (user != null) {
+            if (user.getRoles() != null) {
+                user.getRoles().removeIf(java.util.Objects::isNull);
+            }
+            if (user.getPermissions() != null) {
+                user.getPermissions().removeIf(java.util.Objects::isNull);
+            }
+        }
     }
 }

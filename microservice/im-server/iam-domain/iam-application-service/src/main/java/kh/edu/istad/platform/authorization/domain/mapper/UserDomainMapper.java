@@ -91,7 +91,7 @@ public interface UserDomainMapper {
     @Mapping(target = "accountNonLocked", source = "user.accountNonLocked")
     @Mapping(target = "credentialsNonExpired", source = "user.credentialsNonExpired")
     @Mapping(target = "roles", expression = "java(extractRoleNames(user.getRoles()))")
-    @Mapping(target = "permissions", expression = "java(extractPermissionNames(user.getPermissions()))")
+    @Mapping(target = "permissions", expression = "java(extractEffectivePermissions(user))")
     AuthUserResult toAuthUserResult(User user);
 
     @Mapping(target = "uuid", expression = "java(java.util.UUID.randomUUID())")
@@ -202,5 +202,22 @@ public interface UserDomainMapper {
                 .filter(p -> p.isActive() && !p.isDeleted())
                 .map(Permission::getName)
                 .collect(Collectors.toSet());
+    }
+
+    default Set<String> extractEffectivePermissions(User user) {
+        if (user == null) {
+            return Collections.emptySet();
+        }
+        Set<String> effective = new java.util.HashSet<>();
+        if (user.getRoles() != null) {
+            effective.addAll(user.getEffectivePermissions(null));
+        }
+        if (user.getPermissions() != null) {
+            user.getPermissions().stream()
+                    .filter(p -> p.isActive() && !p.isDeleted())
+                    .map(Permission::getName)
+                    .forEach(effective::add);
+        }
+        return effective;
     }
 }

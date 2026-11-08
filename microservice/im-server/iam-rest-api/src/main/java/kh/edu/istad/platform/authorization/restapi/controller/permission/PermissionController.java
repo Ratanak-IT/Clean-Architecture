@@ -22,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -48,15 +49,15 @@ public class PermissionController {
 
     @GetMapping("/permissions")
     public PageResult<PermissionResponse> listPermissions(
-            @RequestParam(required = false) String search,
-            @RequestParam(required = false) String resource,
-            @RequestParam(required = false) String action,
-            @RequestParam(required = false) Boolean active,
-            @RequestParam(required = false) Boolean system,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "DESC") String sortDirection
+            @RequestParam(name = "search", required = false) String search,
+            @RequestParam(name = "resource", required = false) String resource,
+            @RequestParam(name = "action", required = false) String action,
+            @RequestParam(name = "active", required = false) Boolean active,
+            @RequestParam(name = "system", required = false) Boolean system,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size,
+            @RequestParam(name = "sortBy", defaultValue = "createdAt") String sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "DESC") String sortDirection
     ) {
         PermissionFilterQuery query = PermissionFilterQuery.builder()
                 .search(search)
@@ -77,7 +78,7 @@ public class PermissionController {
     }
 
     @GetMapping("/permissions/{uuid}")
-    public PermissionResponse getPermission(@PathVariable("uuid") UUID uuid) {
+    public PermissionResponse getPermissionByUuid(@PathVariable("uuid") UUID uuid) {
         PermissionResult result = getPermissionUseCase.execute(uuid);
         return permissionMapper.toResponse(result);
     }

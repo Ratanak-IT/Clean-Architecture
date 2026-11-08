@@ -38,6 +38,21 @@ public class CustomOauth2Service extends DefaultOAuth2UserService {
             providerSubject = oAuth2User.getAttribute("sub");
             pictureUrl = oAuth2User.getAttribute("picture");
             username = (email != null) ? email.split("@")[0] : "google_" + providerSubject;
+        } else if ("FACEBOOK".equals(provider)) {
+            Object idObj = oAuth2User.getAttribute("id");
+            providerSubject = (idObj != null) ? idObj.toString() : null;
+            username = (email != null && !email.isBlank()) ? email.split("@")[0] : "facebook_" + providerSubject;
+            pictureUrl = null;
+            Object picObj = oAuth2User.getAttribute("picture");
+            if (picObj instanceof java.util.Map<?, ?> picMap) {
+                Object dataObj = picMap.get("data");
+                if (dataObj instanceof java.util.Map<?, ?> dataMap) {
+                    Object urlObj = dataMap.get("url");
+                    if (urlObj != null) {
+                        pictureUrl = urlObj.toString();
+                    }
+                }
+            }
         } else {
             Object idObj = oAuth2User.getAttribute("id");
             providerSubject = (idObj != null) ? idObj.toString() : null;

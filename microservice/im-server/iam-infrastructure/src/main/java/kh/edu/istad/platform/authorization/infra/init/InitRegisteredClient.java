@@ -57,14 +57,12 @@ public class InitRegisteredClient {
                 .clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
                 // Port 9000 Browser Test Callback
-                .redirectUri("http://127.0.0.1:9000/callback")
                 .redirectUri("http://localhost:9000/callback")
                 // Port 9000 (Current Server Port)
-                .redirectUri("http://127.0.0.1:9000/login/oauth2/code/oidc-client")
                 .redirectUri("http://localhost:9000/login/oauth2/code/oidc-client")
                 // Port 8080 (Alternative/Default)
-                .redirectUri("http://127.0.0.1:8080/login/oauth2/code/oidc-client")
                 .redirectUri("http://localhost:8080/login/oauth2/code/oidc-client")
                 // Postman
                 .redirectUri("https://oauth.pstmn.io/v1/callback")
@@ -78,5 +76,27 @@ public class InitRegisteredClient {
 
         registeredClientRepository.save(oidcClient);
         log.info("RegisteredClient 'oidc-client' configured with requireAuthorizationConsent=true and port 9000/8080 redirect URIs");
+
+        // create client for initial_access_token
+        RegisteredClient.Builder dcrBuilder;
+        RegisteredClient existingDcr = registeredClientRepository.findByClientId("katana-client");
+        if (existingDcr == null) {
+            dcrBuilder = RegisteredClient.withId(UUID.randomUUID().toString())
+                    .clientId("katana-client");
+        } else {
+            dcrBuilder = RegisteredClient.from(existingDcr);
+        }
+
+        RegisteredClient dcrRegistrar = dcrBuilder
+                .clientSecret(passwordEncoder.encode("secret"))
+                .clientName("Katana Client Registrar")
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
+                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+                .scope("client.create")
+                .tokenSettings(tokenSettings)
+                .build();
+        registeredClientRepository.save(dcrRegistrar);
+        log.info("RegisteredClient 'katana-client' with scope client.create initialized.");
     }
 }

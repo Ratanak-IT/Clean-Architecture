@@ -19,6 +19,7 @@ import kh.edu.istad.platform.authorization.persistence.mapper.UserPersistenceMap
 import kh.edu.istad.platform.authorization.persistence.repository.PermissionJpaRepository;
 import kh.edu.istad.platform.authorization.persistence.repository.RoleJpaRepository;
 import kh.edu.istad.platform.authorization.persistence.repository.UserJpaRepository;
+import kh.edu.istad.platform.authorization.persistence.specification.UserSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -44,24 +45,36 @@ public class UserRepositoryAdapter implements UserRepository {
 
     @Override
     public User save(User user) {
+        if (user.getUuid() != null) {
+            var existingOpt = userJpaRepository.findByUuid(user.getUuid());
+            if (existingOpt.isPresent()) {
+                UserEntity existing = existingOpt.get();
+                mapper.updateEntityFromDomain(user, existing);
+                existing.setUpdatedAt(Instant.now());
+                return mapper.toDomain(userJpaRepository.save(existing));
+            }
+        }
+
         UserEntity entity = mapper.toEntity(user);
         String assignedBy = user.getCreatedBy() != null ? user.getCreatedBy() : "SYSTEM";
 
         if (user.getRoles() != null) {
             for (Role role : user.getRoles()) {
-                if (role.getUuid() != null) {
-                    roleJpaRepository.findByUuid(role.getUuid())
-                            .ifPresent(roleEntity -> entity.addRole(roleEntity, assignedBy));
-                } else if (role.getName() != null) {
-                    roleJpaRepository.findByName(role.getName())
-                            .ifPresent(roleEntity -> entity.addRole(roleEntity, assignedBy));
+                if (role != null) {
+                    if (role.getUuid() != null) {
+                        roleJpaRepository.findByUuid(role.getUuid())
+                                .ifPresent(roleEntity -> entity.addRole(roleEntity, assignedBy));
+                    } else if (role.getName() != null) {
+                        roleJpaRepository.findByName(role.getName())
+                                .ifPresent(roleEntity -> entity.addRole(roleEntity, assignedBy));
+                    }
                 }
             }
         }
 
         if (user.getPermissions() != null) {
             for (Permission perm : user.getPermissions()) {
-                if (perm.getUuid() != null) {
+                if (perm != null && perm.getUuid() != null) {
                     permissionJpaRepository.findByUuid(perm.getUuid())
                             .ifPresent(permEntity -> entity.addPermission(permEntity, "GRANT", assignedBy));
                 }
@@ -152,30 +165,7 @@ public class UserRepositoryAdapter implements UserRepository {
 
     @Override
     public PageResult<User> findAll(UserFilterQuery query) {
-        Specification<UserEntity> spec = (root, criteriaQuery, cb) -> {
-            List<Predicate> predicates = new ArrayList<>();
-
-            predicates.add(cb.isFalse(root.get("isDeleted")));
-
-            if (query.enabled() != null) {
-                predicates.add(cb.equal(root.get("enabled"), query.enabled()));
-            }
-
-            if (query.emailVerified() != null) {
-                predicates.add(cb.equal(root.get("emailVerified"), query.emailVerified()));
-            }
-
-            if (query.search() != null && !query.search().isBlank()) {
-                String pattern = "%" + query.search().toLowerCase() + "%";
-                Predicate usernameMatch = cb.like(cb.lower(root.get("username")), pattern);
-                Predicate emailMatch = cb.like(cb.lower(root.get("email")), pattern);
-                Predicate givenNameMatch = cb.like(cb.lower(root.get("givenName")), pattern);
-                Predicate familyNameMatch = cb.like(cb.lower(root.get("familyName")), pattern);
-                predicates.add(cb.or(usernameMatch, emailMatch, givenNameMatch, familyNameMatch));
-            }
-
-            return cb.and(predicates.toArray(new Predicate[0]));
-        };
+        Specification<UserEntity> spec = UserSpecification.filter(query);
 
         Sort sort = Sort.by(
                 "DESC".equalsIgnoreCase(query.sortDirection()) ? Sort.Direction.DESC : Sort.Direction.ASC,

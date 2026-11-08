@@ -6,8 +6,9 @@ import kh.edu.istad.platform.authorization.domain.valueobject.IdentityProviderTy
 import kh.edu.istad.platform.authorization.persistence.entity.IdentityEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface IdentityPersistenceMapper {
 
     default String fromEmail(Email email) {
