@@ -1,5 +1,6 @@
 package kh.edu.istad.platform.authorization.domain.usecase.user;
 
+import kh.edu.istad.common.domain.exception.ResourceNotFoundException;
 import kh.edu.istad.platform.authorization.domain.dto.user.command.ChangePasswordCommand;
 import kh.edu.istad.platform.authorization.domain.entity.User;
 import kh.edu.istad.platform.authorization.domain.port.out.identity.CurrentActorProvider;
@@ -31,18 +32,15 @@ public class ChangePasswordUseCase {
         User user = userRepository.findByUuid(userUuid);
 
         if (!passwordHasher.matches(command.currentPassword(), user.getPasswordHash())) {
-            throw new IllegalArgumentException("Current password is incorrect");
+            throw new ResourceNotFoundException("Current password is incorrect");
         }
 
         if (!command.newPassword().equals(command.confirmPassword())) {
-            throw new IllegalArgumentException("New passwords do not match");
+            throw new ResourceNotFoundException("New passwords do not match");
         }
 
         String hashed = passwordHasher.hash(command.newPassword());
-        user.setPasswordHash(hashed);
-        user.setPasswordChangedAt(Instant.now());
-        user.setUpdatedAt(Instant.now());
-        userRepository.save(user);
+        userRepository.updatePassword(userUuid, hashed);
         log.info("Changed password for user: {}", user.getUsername().value());
     }
 }

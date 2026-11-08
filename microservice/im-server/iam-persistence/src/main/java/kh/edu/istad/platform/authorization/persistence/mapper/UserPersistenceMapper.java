@@ -64,6 +64,16 @@ public interface UserPersistenceMapper {
     @Mapping(target = "identities", ignore = true)
     UserEntity toEntity(User domain);
 
+    @Mapping(source = "address.streetAddress", target = "addressStreetAddress")
+    @Mapping(source = "address.locality", target = "addressLocality")
+    @Mapping(source = "address.region", target = "addressRegion")
+    @Mapping(source = "address.postalCode", target = "addressPostalCode")
+    @Mapping(source = "address.country", target = "addressCountry")
+    @Mapping(target = "userRoles", ignore = true)
+    @Mapping(target = "userPermissions", ignore = true)
+    @Mapping(target = "identities", ignore = true)
+    void updateEntityFromDomain(User domain, @MappingTarget UserEntity entity);
+
     default Role mapUserRole(UserRoleEntity ur) {
         if (ur == null || ur.getRole() == null) {
             return null;
@@ -110,39 +120,5 @@ public interface UserPersistenceMapper {
                 .deleted(pe.isDeleted())
                 .version(pe.getVersion())
                 .build();
-    }
-
-    @AfterMapping
-    default void linkRolesAndPermissions(User domain, @MappingTarget UserEntity entity) {
-        if (domain == null) return;
-        if (domain.getRoles() != null) {
-            java.util.Set<String> domainRoleNames = domain.getRoles().stream()
-                    .map(Role::getName)
-                    .collect(java.util.stream.Collectors.toSet());
-            if (entity.getUserRoles() != null) {
-                entity.getUserRoles().stream()
-                        .filter(ur -> ur.getRole() != null && ur.getRevokedAt() == null)
-                        .filter(ur -> !domainRoleNames.contains(ur.getRole().getName()))
-                        .forEach(ur -> {
-                            ur.setRevokedAt(java.time.Instant.now());
-                            ur.setRevokedBy("SYSTEM");
-                            ur.setReason("Role removed from user domain model");
-                        });
-            }
-            // Assign new role
-            domain.getRoles().forEach(r -> {
-                RoleEntity roleEntity = RoleEntity.builder()
-                        .id(r.getId())
-                        .uuid(r.getUuid())
-                        .name(r.getName())
-                        .description(r.getDescription())
-                        .isSystem(r.isSystem())
-                        .isActive(r.isActive())
-                        .isDeleted(r.isDeleted())
-                        .version(r.getVersion())
-                        .build();
-                entity.addRole(roleEntity, "SYSTEM");
-            });
-        }
     }
 }

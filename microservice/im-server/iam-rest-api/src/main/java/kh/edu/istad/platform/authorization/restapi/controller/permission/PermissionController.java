@@ -77,14 +77,14 @@ public class PermissionController {
     }
 
     @GetMapping("/permissions/{uuid}")
-    public PermissionResponse getPermission(@PathVariable UUID uuid) {
+    public PermissionResponse getPermission(@PathVariable("uuid") UUID uuid) {
         PermissionResult result = getPermissionUseCase.execute(uuid);
         return permissionMapper.toResponse(result);
     }
 
     @PatchMapping("/permissions/{uuid}")
     public PermissionResponse updatePermission(
-            @PathVariable UUID uuid,
+            @PathVariable("uuid") UUID uuid,
             @Valid @RequestBody UpdatePermissionRequest request
     ) {
         UpdatePermissionCommand command = permissionMapper.toUpdateCommand(uuid, request);
@@ -94,19 +94,19 @@ public class PermissionController {
 
     @DeleteMapping("/permissions/{uuid}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deletePermission(@PathVariable UUID uuid) {
+    public void deletePermission(@PathVariable("uuid") UUID uuid) {
         deletePermissionUseCase.execute(uuid);
     }
 
     @PostMapping("/permissions/{uuid}/activate")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void activatePermission(@PathVariable UUID uuid) {
+    public void activatePermission(@PathVariable("uuid") UUID uuid) {
         activatePermissionUseCase.execute(uuid);
     }
 
     @PostMapping("/permissions/{uuid}/deactivate")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deactivatePermission(@PathVariable UUID uuid) {
+    public void deactivatePermission(@PathVariable("uuid") UUID uuid) {
         deactivatePermissionUseCase.execute(uuid);
     }
 }

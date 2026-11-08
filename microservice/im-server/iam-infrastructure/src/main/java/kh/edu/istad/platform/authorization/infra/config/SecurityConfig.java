@@ -109,10 +109,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/users").hasAuthority("user:create")
 
                         // 4. User Read
-                        .requestMatchers(HttpMethod.GET, "/api/users").hasAuthority("user:read")
-                        .requestMatchers(HttpMethod.GET, "/api/users/*").hasAuthority("user:read")
-                        .requestMatchers(HttpMethod.GET, "/api/users/*/authorities").hasAuthority("user:read")
-                        .requestMatchers(HttpMethod.GET, "/api/users/*/identities").hasAuthority("user:read")
+                        .requestMatchers(HttpMethod.GET, "/api/users", "/api/users/*", "/api/users/*/authorities", "/api/users/*/identities").hasAuthority("user:read")
 
                         // 5. User Update & Delete
                         .requestMatchers(HttpMethod.PATCH, "/api/users/*").hasAuthority("user:update")
@@ -125,7 +122,16 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/users/*/roles", "/api/users/*/permissions").hasAuthority("user:assign")
                         .requestMatchers(HttpMethod.DELETE, "/api/users/*/roles/*", "/api/users/*/permissions/*").hasAuthority("user:assign")
 
-                        // 7. Permissions
+                        // 7. Roles (D.2)
+                        .requestMatchers(HttpMethod.POST, "/api/roles").hasAuthority("role:create")
+                        .requestMatchers(HttpMethod.GET, "/api/roles", "/api/roles/*").hasAuthority("role:read")
+                        .requestMatchers(HttpMethod.PATCH, "/api/roles/*").hasAuthority("role:update")
+                        .requestMatchers(HttpMethod.DELETE, "/api/roles/*").hasAuthority("role:delete")
+                        .requestMatchers(HttpMethod.POST, "/api/roles/*/activate", "/api/roles/*/deactivate").hasAuthority("role:update")
+                        .requestMatchers(HttpMethod.POST, "/api/roles/*/permissions").hasAuthority("role:assign")
+                        .requestMatchers(HttpMethod.DELETE, "/api/roles/*/permissions/*").hasAuthority("role:assign")
+
+                        // 8. Permissions (D.3)
                         .requestMatchers(HttpMethod.POST, "/api/permissions").hasAuthority("permission:create")
                         .requestMatchers(HttpMethod.GET, "/api/permissions", "/api/permissions/*").hasAuthority("permission:read")
                         .requestMatchers(HttpMethod.PATCH, "/api/permissions/*").hasAuthority("permission:update")

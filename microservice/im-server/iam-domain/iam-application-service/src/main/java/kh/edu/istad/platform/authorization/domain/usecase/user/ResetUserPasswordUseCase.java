@@ -24,10 +24,7 @@ public class ResetUserPasswordUseCase {
         User user = userRepository.findByUuid(command.userUuid());
 
         String hashed = passwordHasher.hash(command.newPassword());
-        user.setPasswordHash(hashed);
-        user.setPasswordChangedAt(Instant.now());
-        user.setUpdatedAt(Instant.now());
-        userRepository.save(user);
+        userRepository.updatePassword(command.userUuid(), hashed);
         log.info("Reset password for user: {}", user.getUsername().value());
     }
 }

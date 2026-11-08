@@ -2,6 +2,7 @@ package kh.edu.istad.platform.authorization.domain.usecase.identity;
 
 import kh.edu.istad.platform.authorization.domain.entity.Identity;
 import kh.edu.istad.platform.authorization.domain.entity.User;
+import kh.edu.istad.platform.authorization.domain.exception.AuthorizationDomainException;
 import kh.edu.istad.platform.authorization.domain.port.out.identity.IdentityRepository;
 import kh.edu.istad.platform.authorization.domain.port.out.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,9 @@ public class UnlinkIdentityUseCase {
     public void execute(UUID userUuid, UUID identityUuid) {
         User user = userRepository.findByUuid(userUuid);
         Identity identity = identityRepository.findByUuid(identityUuid);
+        if (!userUuid.equals(identity.getUserUuid())){
+            throw new AuthorizationDomainException("Identity does not belong to user: " + userUuid);
+        }
 
         List<Identity> existingIdentities = identityRepository.findByUserUuid(userUuid);
         user.validateCanUnlinkIdentity(existingIdentities, identity);

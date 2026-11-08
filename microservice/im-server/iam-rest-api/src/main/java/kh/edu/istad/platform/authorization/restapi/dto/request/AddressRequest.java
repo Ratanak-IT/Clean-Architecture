@@ -9,7 +9,7 @@ public record AddressRequest(
         @Size(max = 100) String locality,
         @Size(max = 100) String region,
         @Size(max = 20) String postalCode,
-        @Size(max = 100) String country
+        @Size(max = 2) String country
 ) {
 }
 

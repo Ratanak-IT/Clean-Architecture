@@ -38,7 +38,10 @@ public class AssignRolesToUserUseCase {
                 ? command.assignedBy()
                 : currentActorProvider.getCurrentActor();
 
-        Set<Role> roles = user.getRoles() != null ? new HashSet<>(user.getRoles()) : new HashSet<>();
+        AssignRolesToUserCommand finalCommand = (command.assignedBy() != null)
+                ? command
+                : new AssignRolesToUserCommand(command.userUuid(), command.roleUuids(), command.expiresAt(), assignedBy, command.reason());
+
         List<RoleAssignmentResult> results = new ArrayList<>();
 
         for (UUID roleUuid : command.roleUuids()) {
@@ -47,13 +50,10 @@ public class AssignRolesToUserUseCase {
             // Business rule in Entity: Inactive or deleted role cannot be assigned
             role.validateCanAssign();
 
-            roles.add(role);
             results.add(userDomainMapper.toRoleAssignmentResult(user, role, assignedBy, command.reason()));
         }
 
-        user.setRoles(roles);
-        user.setUpdatedAt(Instant.now());
-        userRepository.save(user);
+        userRepository.assignRoles(finalCommand);
 
         log.info("Assigned {} roles to user {}", results.size(), user.getUsername().value());
         return results;

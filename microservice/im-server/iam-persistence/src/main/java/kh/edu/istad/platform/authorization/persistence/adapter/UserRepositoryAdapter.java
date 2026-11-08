@@ -3,11 +3,21 @@ package kh.edu.istad.platform.authorization.persistence.adapter;
 import jakarta.persistence.criteria.Predicate;
 import kh.edu.istad.common.domain.exception.ResourceNotFoundException;
 import kh.edu.istad.platform.authorization.domain.dto.PageResult;
+import kh.edu.istad.platform.authorization.domain.dto.user.command.AssignRolesToUserCommand;
+import kh.edu.istad.platform.authorization.domain.dto.user.command.GrantPermissionsToUserCommand;
+import kh.edu.istad.platform.authorization.domain.dto.user.command.RevokePermissionFromUserCommand;
+import kh.edu.istad.platform.authorization.domain.dto.user.command.RevokeRoleFromUserCommand;
 import kh.edu.istad.platform.authorization.domain.dto.user.command.UserFilterQuery;
+import kh.edu.istad.platform.authorization.domain.entity.Permission;
+import kh.edu.istad.platform.authorization.domain.entity.Role;
 import kh.edu.istad.platform.authorization.domain.entity.User;
 import kh.edu.istad.platform.authorization.domain.port.out.user.UserRepository;
+import kh.edu.istad.platform.authorization.persistence.entity.PermissionEntity;
+import kh.edu.istad.platform.authorization.persistence.entity.RoleEntity;
 import kh.edu.istad.platform.authorization.persistence.entity.UserEntity;
 import kh.edu.istad.platform.authorization.persistence.mapper.UserPersistenceMapper;
+import kh.edu.istad.platform.authorization.persistence.repository.PermissionJpaRepository;
+import kh.edu.istad.platform.authorization.persistence.repository.RoleJpaRepository;
 import kh.edu.istad.platform.authorization.persistence.repository.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,6 +30,7 @@ import org.springframework.stereotype.Repository;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Repository
@@ -27,12 +38,92 @@ import java.util.UUID;
 public class UserRepositoryAdapter implements UserRepository {
 
     private final UserJpaRepository userJpaRepository;
+    private final RoleJpaRepository roleJpaRepository;
+    private final PermissionJpaRepository permissionJpaRepository;
     private final UserPersistenceMapper mapper;
 
     @Override
     public User save(User user) {
         UserEntity entity = mapper.toEntity(user);
+        String assignedBy = user.getCreatedBy() != null ? user.getCreatedBy() : "SYSTEM";
+
+        if (user.getRoles() != null) {
+            for (Role role : user.getRoles()) {
+                if (role.getUuid() != null) {
+                    roleJpaRepository.findByUuid(role.getUuid())
+                            .ifPresent(roleEntity -> entity.addRole(roleEntity, assignedBy));
+                } else if (role.getName() != null) {
+                    roleJpaRepository.findByName(role.getName())
+                            .ifPresent(roleEntity -> entity.addRole(roleEntity, assignedBy));
+                }
+            }
+        }
+
+        if (user.getPermissions() != null) {
+            for (Permission perm : user.getPermissions()) {
+                if (perm.getUuid() != null) {
+                    permissionJpaRepository.findByUuid(perm.getUuid())
+                            .ifPresent(permEntity -> entity.addPermission(permEntity, "GRANT", assignedBy));
+                }
+            }
+        }
+
         return mapper.toDomain(userJpaRepository.save(entity));
+    }
+
+    @Override
+    public User update(User user) {
+        UserEntity existing = userJpaRepository.findByUuid(user.getUuid())
+                .orElseThrow(() -> new ResourceNotFoundException("User", user.getUuid()));
+        mapper.updateEntityFromDomain(user, existing);
+        existing.setUpdatedAt(Instant.now());
+        return mapper.toDomain(userJpaRepository.save(existing));
+    }
+
+    @Override
+    public void grantPermissions(GrantPermissionsToUserCommand command) {
+        UserEntity user = userJpaRepository.findByUuid(command.userUuid())
+                .orElseThrow(() -> new ResourceNotFoundException("User", command.userUuid()));
+
+        for (UUID permUuid : command.permissionUuids()) {
+            PermissionEntity perm = permissionJpaRepository.findByUuid(permUuid)
+                    .orElseThrow(() -> new ResourceNotFoundException("Permission", permUuid));
+            user.addPermission(perm, command.effect(), command.grantedBy());
+        }
+        userJpaRepository.save(user);
+    }
+
+    @Override
+    public void revokePermission(RevokePermissionFromUserCommand command) {
+        UserEntity user = userJpaRepository.findByUuid(command.userUuid())
+                .orElseThrow(() -> new ResourceNotFoundException("User", command.userUuid()));
+        PermissionEntity perm = permissionJpaRepository.findByUuid(command.permissionUuid())
+                .orElseThrow(() -> new ResourceNotFoundException("Permission", command.permissionUuid()));
+        user.revokePermission(perm, command.revokedBy(), command.reason());
+        userJpaRepository.save(user);
+    }
+
+    @Override
+    public void assignRoles(AssignRolesToUserCommand command) {
+        UserEntity user = userJpaRepository.findByUuid(command.userUuid())
+                .orElseThrow(() -> new ResourceNotFoundException("User", command.userUuid()));
+
+        for (UUID roleUuid : command.roleUuids()) {
+            RoleEntity role = roleJpaRepository.findByUuid(roleUuid)
+                    .orElseThrow(() -> new ResourceNotFoundException("Role", roleUuid));
+            user.addRole(role, command.assignedBy());
+        }
+        userJpaRepository.save(user);
+    }
+
+    @Override
+    public void revokeRole(RevokeRoleFromUserCommand command) {
+        UserEntity user = userJpaRepository.findByUuid(command.userUuid())
+                .orElseThrow(() -> new ResourceNotFoundException("User", command.userUuid()));
+        RoleEntity role = roleJpaRepository.findByUuid(command.roleUuid())
+                .orElseThrow(() -> new ResourceNotFoundException("Role", command.roleUuid()));
+        user.revokeRole(role, command.revokedBy(), command.reason());
+        userJpaRepository.save(user);
     }
 
     @Override
@@ -98,6 +189,16 @@ public class UserRepositoryAdapter implements UserRepository {
                 .toList();
 
         return PageResult.of(content, entityPage.getNumber(), entityPage.getSize(), entityPage.getTotalElements());
+    }
+
+    @Override
+    public void updatePassword(UUID uuid, String newPasswordHash) {
+        UserEntity entity = userJpaRepository.findByUuid(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("User", uuid));
+        entity.setPasswordHash(newPasswordHash);
+        entity.setPasswordChangedAt(Instant.now());
+        entity.setUpdatedAt(Instant.now());
+        userJpaRepository.save(entity);
     }
 
     @Override

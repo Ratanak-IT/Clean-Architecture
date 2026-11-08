@@ -46,7 +46,7 @@ public class UpdateUserProfileUseCase {
         }
 
         user.setUpdatedAt(Instant.now());
-        User updated = userRepository.save(user);
+        User updated = userRepository.update(user);
         log.info("Updated profile for user: {}", updated.getUsername().value());
         return userDomainMapper.toResult(updated);
     }

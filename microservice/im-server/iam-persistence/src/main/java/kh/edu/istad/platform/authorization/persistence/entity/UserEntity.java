@@ -133,10 +133,19 @@ public class UserEntity extends AuditableEntity {
     private Set<IdentityEntity> identities = new HashSet<>();
 
     public void addRole(RoleEntity role, String assignBy) {
-        boolean alreadyActive = userRoles.stream()
-                .anyMatch(ur -> ur.getRole() != null && ur.getRole().getId() != null && ur.getRole().getId().equals(role.getId())
-                        && ur.getRevokedAt() == null);
-        if (!alreadyActive) {
+        UserRoleEntity existing = userRoles.stream()
+                .filter(ur -> ur.getRole() != null
+                        && ((role.getId() != null && role.getId().equals(ur.getRole().getId()))
+                            || (role.getUuid() != null && role.getUuid().equals(ur.getRole().getUuid()))))
+                .findFirst()
+                .orElse(null);
+        if (existing != null) {
+            existing.setRevokedAt(null);
+            existing.setRevokedBy(null);
+            existing.setReason(null);
+            existing.setAssignedAt(Instant.now());
+            existing.setAssignedBy(assignBy);
+        } else {
             UserRoleEntity userRole = UserRoleEntity.builder()
                     .user(this)
                     .role(role)
@@ -147,11 +156,11 @@ public class UserEntity extends AuditableEntity {
         }
     }
 
-
     public void revokeRole(RoleEntity role, String revokedBy, String reason) {
         userRoles.stream()
                 .filter(ur -> ur.getRole() != null
-                        && ur.getRole().equals(role)
+                        && ((role.getId() != null && role.getId().equals(ur.getRole().getId()))
+                            || (role.getUuid() != null && role.getUuid().equals(ur.getRole().getUuid())))
                         && ur.getRevokedAt() == null)
                 .forEach(ur -> {
                     ur.setRevokedAt(Instant.now());
@@ -161,11 +170,20 @@ public class UserEntity extends AuditableEntity {
     }
 
     public void addPermission(PermissionEntity permission, String effect, String assignedBy) {
-        boolean alreadyActive = userPermissions.stream()
-                .anyMatch(up -> up.getPermission() != null
-                        && up.getPermission().equals(permission)
-                        && up.getRevokedAt() == null);
-        if (!alreadyActive) {
+        UserPermissionEntity existing = userPermissions.stream()
+                .filter(up -> up.getPermission() != null
+                        && ((permission.getId() != null && permission.getId().equals(up.getPermission().getId()))
+                            || (permission.getUuid() != null && permission.getUuid().equals(up.getPermission().getUuid()))))
+                .findFirst()
+                .orElse(null);
+        if (existing != null) {
+            existing.setEffect(effect != null ? effect : "GRANT");
+            existing.setRevokedAt(null);
+            existing.setRevokedBy(null);
+            existing.setReason(null);
+            existing.setAssignedAt(Instant.now());
+            existing.setAssignedBy(assignedBy);
+        } else {
             UserPermissionEntity userPermission = UserPermissionEntity.builder()
                     .user(this)
                     .permission(permission)
@@ -180,7 +198,8 @@ public class UserEntity extends AuditableEntity {
     public void revokePermission(PermissionEntity permission, String revokedBy, String reason) {
         userPermissions.stream()
                 .filter(up -> up.getPermission() != null
-                        && up.getPermission().equals(permission)
+                        && ((permission.getId() != null && permission.getId().equals(up.getPermission().getId()))
+                            || (permission.getUuid() != null && permission.getUuid().equals(up.getPermission().getUuid())))
                         && up.getRevokedAt() == null)
                 .forEach(up -> {
                     up.setRevokedAt(Instant.now());

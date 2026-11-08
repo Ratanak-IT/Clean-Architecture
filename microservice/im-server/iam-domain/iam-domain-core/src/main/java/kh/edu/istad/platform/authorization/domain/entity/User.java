@@ -174,6 +174,10 @@ public class User extends AuditAware<Long> {
 
     // A user cannot unlink their last sign-in method.
     public void validateCanUnlinkIdentity(List<Identity> existingIdentities, Identity identityToUnlink) {
+        if (identityToUnlink == null || (identityToUnlink.getUserId() != null
+        && !this.uuid.equals(identityToUnlink.getUserId()))){
+            throw new AuthorizationDomainException("Identity does not belong to this user");
+        }
         boolean hasPassword = this.passwordHash != null && !this.passwordHash.isBlank();
         long activeIdentities = existingIdentities == null ? 0 :
                 existingIdentities.stream().filter(i -> !i.isDeleted()).count();

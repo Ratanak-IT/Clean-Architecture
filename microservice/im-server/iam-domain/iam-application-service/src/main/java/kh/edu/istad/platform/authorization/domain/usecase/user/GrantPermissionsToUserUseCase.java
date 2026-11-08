@@ -38,7 +38,10 @@ public class GrantPermissionsToUserUseCase {
                 ? command.grantedBy()
                 : currentActorProvider.getCurrentActor();
 
-        Set<Permission> permissions = user.getPermissions() != null ? new HashSet<>(user.getPermissions()) : new HashSet<>();
+        GrantPermissionsToUserCommand finalCommand = (command.grantedBy() != null)
+                ? command
+                : new GrantPermissionsToUserCommand(command.userUuid(), command.permissionUuids(), command.effect(), grantedBy, command.reason());
+
         List<PermissionGrantResult> results = new ArrayList<>();
 
         for (UUID permUuid : command.permissionUuids()) {
@@ -47,13 +50,10 @@ public class GrantPermissionsToUserUseCase {
             // Business rule in Entity: Inactive or deleted permission cannot be assigned
             permission.validateCanAssign();
 
-            permissions.add(permission);
             results.add(userDomainMapper.toPermissionGrantResult(user, permission, grantedBy, command.reason()));
         }
 
-        user.setPermissions(permissions);
-        user.setUpdatedAt(Instant.now());
-        userRepository.save(user);
+        userRepository.grantPermissions(finalCommand);
 
         log.info("Granted {} permissions to user {}", results.size(), user.getUsername().value());
         return results;

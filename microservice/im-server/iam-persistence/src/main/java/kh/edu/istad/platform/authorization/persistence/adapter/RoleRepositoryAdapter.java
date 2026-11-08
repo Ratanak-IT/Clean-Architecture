@@ -26,13 +26,6 @@ public class RoleRepositoryAdapter implements RoleRepository {
     }
 
     @Override
-    public Role findById(Long id) {
-        return roleJpaRepository.findById(id)
-                .map(mapper::toDomain)
-                .orElseThrow(() -> new ResourceNotFoundException("Role", id));
-    }
-
-    @Override
     public Role findByUuid(UUID uuid) {
         return roleJpaRepository.findByUuid(uuid)
                 .map(mapper::toDomain)
@@ -54,11 +47,6 @@ public class RoleRepositoryAdapter implements RoleRepository {
     @Override
     public List<Role> findAll() {
         return roleJpaRepository.findAll().stream().map(mapper::toDomain).toList();
-    }
-
-    @Override
-    public void deleteById(Long id) {
-        roleJpaRepository.deleteById(id);
     }
 
     @Override

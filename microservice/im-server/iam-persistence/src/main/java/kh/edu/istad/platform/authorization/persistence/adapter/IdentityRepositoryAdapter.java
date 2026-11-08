@@ -27,20 +27,17 @@ public class IdentityRepositoryAdapter implements IdentityRepository {
     @Override
     public Identity save(Identity identity) {
         IdentityEntity entity = mapper.toEntity(identity);
-        if (identity.getUserId() != null) {
+        if (identity.getUserUuid() != null) {
+            UserEntity userRef = userJpaRepository.findByUuid(identity.getUserUuid())
+                    .orElseThrow(() -> new ResourceNotFoundException("User", identity.getUserUuid()));
+            entity.setUser(userRef);
+        } else if (identity.getUserId() != null) {
             UserEntity userRef = userJpaRepository.findById(identity.getUserId())
                     .orElseThrow(() -> new ResourceNotFoundException("User", identity.getUserId()));
             entity.setUser(userRef);
         }
         IdentityEntity saved = identityJpaRepository.save(entity);
         return mapper.toDomain(saved);
-    }
-
-    @Override
-    public Identity findById(Long id) {
-        return identityJpaRepository.findById(id)
-                .map(mapper::toDomain)
-                .orElseThrow(() -> new ResourceNotFoundException("Identity", id));
     }
 
     @Override
@@ -57,13 +54,6 @@ public class IdentityRepositoryAdapter implements IdentityRepository {
     }
 
     @Override
-    public List<Identity> findByUserId(Long userId) {
-        return identityJpaRepository.findByUserId(userId).stream()
-                .map(mapper::toDomain)
-                .toList();
-    }
-
-    @Override
     public List<Identity> findByUserUuid(UUID userUuid) {
         return identityJpaRepository.findByUserUuid(userUuid).stream()
                 .map(mapper::toDomain)
@@ -73,11 +63,6 @@ public class IdentityRepositoryAdapter implements IdentityRepository {
     @Override
     public boolean existsByProviderAndProviderSubject(IdentityProviderType provider, String providerSubject) {
         return identityJpaRepository.existsByProviderAndProviderSubject(provider.name(), providerSubject);
-    }
-
-    @Override
-    public void deleteById(Long id) {
-        identityJpaRepository.deleteById(id);
     }
 
     @Override

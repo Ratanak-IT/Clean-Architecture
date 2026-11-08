@@ -72,13 +72,13 @@ public class UserController {
 
     @GetMapping("/users")
     public PageResult<UserSummaryResponse> listUsers(
-            @RequestParam(required = false) String search,
-            @RequestParam(required = false) Boolean enabled,
-            @RequestParam(required = false) Boolean emailVerified,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "DESC") String sortDirection
+            @RequestParam(name = "search", required = false) String search,
+            @RequestParam(name = "enabled", required = false) Boolean enabled,
+            @RequestParam(name = "emailVerified", required = false) Boolean emailVerified,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size,
+            @RequestParam(name = "sortBy", defaultValue = "createdAt") String sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "DESC") String sortDirection
     ) {
         UserFilterQuery query = UserFilterQuery.builder()
                 .search(search)
@@ -89,19 +89,21 @@ public class UserController {
                 .sortBy(sortBy)
                 .sortDirection(sortDirection)
                 .build();
+
         PageResult<UserSummary> pageResult = listUsersUseCase.execute(query);
+
         return userRestMapper.toResponse(pageResult);
     }
 
     @GetMapping("/users/{uuid}")
-    public UserResponse getUser(@PathVariable UUID uuid) {
+    public UserResponse getUser(@PathVariable("uuid") UUID uuid) {
         UserResult result = getUserUseCase.execute(uuid);
         return userRestMapper.toResponse(result);
     }
 
     @PatchMapping("/users/{uuid}")
     public UserResponse updateUserProfile(
-            @PathVariable UUID uuid,
+            @PathVariable("uuid") UUID uuid,
             @RequestBody UpdateUserProfileRequest request
     ) {
         UpdateUserProfileCommand command = userRestMapper.toCommand(uuid, request);
@@ -111,38 +113,38 @@ public class UserController {
 
     @DeleteMapping("/users/{uuid}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUser(@PathVariable UUID uuid) {
+    public void deleteUser(@PathVariable("uuid") UUID uuid) {
         deleteUserUseCase.execute(uuid);
     }
 
     @PostMapping("/users/{uuid}/enable")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void enableUser(@PathVariable UUID uuid) {
+    public void enableUser(@PathVariable("uuid") UUID uuid) {
         enableUserUseCase.execute(uuid);
     }
 
     @PostMapping("/users/{uuid}/disable")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void disableUser(@PathVariable UUID uuid) {
+    public void disableUser(@PathVariable("uuid") UUID uuid) {
         disableUserUseCase.execute(uuid);
     }
 
     @PostMapping("/users/{uuid}/lock")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void lockUser(@PathVariable UUID uuid) {
+    public void lockUser(@PathVariable("uuid") UUID uuid) {
         lockUserUseCase.execute(uuid);
     }
 
     @PostMapping("/users/{uuid}/unlock")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void unlockUser(@PathVariable UUID uuid) {
+    public void unlockUser(@PathVariable("uuid") UUID uuid) {
         unlockUserUseCase.execute(uuid);
     }
 
     @PutMapping("/users/{uuid}/password")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void resetUserPassword(
-            @PathVariable UUID uuid,
+            @PathVariable("uuid") UUID uuid,
             @Valid @RequestBody ResetUserPasswordRequest request
     ) {
         ResetUserPasswordCommand command = userRestMapper.toCommand(uuid, request);
@@ -150,14 +152,14 @@ public class UserController {
     }
 
     @GetMapping("/users/{uuid}/authorities")
-    public UserAuthoritiesResponse getUserAuthorities(@PathVariable UUID uuid) {
+    public UserAuthoritiesResponse getUserAuthorities(@PathVariable("uuid") UUID uuid) {
         UserAuthoritiesResult result = getUserAuthoritiesUseCase.execute(uuid);
         return userRestMapper.toResponse(result);
     }
 
     @PostMapping("/users/{uuid}/roles")
     public List<RoleAssignmentResponse> assignRolesToUser(
-            @PathVariable UUID uuid,
+            @PathVariable("uuid") UUID uuid,
             @Valid @RequestBody AssignRolesToUserRequest request
     ) {
         AssignRolesToUserCommand command = userRestMapper.toCommand(uuid, request, null);
@@ -165,11 +167,11 @@ public class UserController {
         return userRestMapper.toRoleAssignmentResponses(results);
     }
 
-    @DeleteMapping("/users/{uuid}/roles/{roleUuid}")
+    @DeleteMapping("/users/{uuid}/roles/{roleUuid}") // not test yet
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void revokeRoleFromUser(
-            @PathVariable UUID uuid,
-            @PathVariable UUID roleUuid,
+            @PathVariable("uuid") UUID uuid,
+            @PathVariable("roleUuid") UUID roleUuid,
             @RequestParam(required = false, defaultValue = "Revoked by admin") String reason
     ) {
         revokeRoleFromUserUseCase.execute(uuid, roleUuid, reason);
@@ -177,7 +179,7 @@ public class UserController {
 
     @PostMapping("/users/{uuid}/permissions")
     public List<PermissionGrantResponse> grantPermissionsToUser(
-            @PathVariable UUID uuid,
+            @PathVariable("uuid") UUID uuid,
             @Valid @RequestBody GrantPermissionsToUserRequest request
     ) {
         GrantPermissionsToUserCommand command = userRestMapper.toCommand(uuid, request, null);
@@ -188,15 +190,15 @@ public class UserController {
     @DeleteMapping("/users/{uuid}/permissions/{permissionUuid}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void revokePermissionFromUser(
-            @PathVariable UUID uuid,
-            @PathVariable UUID permissionUuid,
-            @RequestParam(required = false, defaultValue = "Revoked by admin") String reason
+            @PathVariable("uuid") UUID uuid,
+            @PathVariable("permissionUuid") UUID permissionUuid,
+            @RequestParam(name = "reason", required = false, defaultValue = "Revoked by admin") String reason
     ) {
         revokePermissionFromUserUseCase.execute(uuid, permissionUuid, reason);
     }
 
     @GetMapping("/users/{uuid}/identities")
-    public List<IdentityResponse> listUserIdentities(@PathVariable UUID uuid) {
+    public List<IdentityResponse> listUserIdentities(@PathVariable("uuid") UUID uuid) {
         List<IdentityResult> results = listUserIdentitiesUseCase.execute(uuid);
         return userRestMapper.toIdentityResponses(results);
     }
@@ -204,8 +206,8 @@ public class UserController {
     @DeleteMapping("/users/{uuid}/identities/{identityUuid}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void unlinkUserIdentity(
-            @PathVariable UUID uuid,
-            @PathVariable UUID identityUuid
+            @PathVariable("uuid") UUID uuid,
+            @PathVariable("identityUuid") UUID identityUuid
     ) {
         unlinkIdentityUseCase.execute(uuid, identityUuid);
     }
@@ -238,7 +240,7 @@ public class UserController {
 
     @DeleteMapping("/me/identities/{identityUuid}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void unlinkMyIdentity(@PathVariable UUID identityUuid) {
+    public void unlinkMyIdentity(@PathVariable("identityUuid") UUID identityUuid) {
         unlinkMyIdentityUseCase.execute(identityUuid);
     }
 }
