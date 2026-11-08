@@ -4,15 +4,14 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.grpc.client.ImportGrpcClients;
 
 @SpringBootApplication(scanBasePackages = {
         "kh.edu.istad.platform.customer",
         "kh.edu.istad.common.restapi"
 }
-,
-exclude = {
-        net.devh.boot.grpc.server.autoconfigure.GrpcMetadataConsulConfiguration.class
-})
+)
+@ImportGrpcClients
 //@EnableDiscoveryClient
 public class CustomerApplicationService {
     public static void main(String[] args) {

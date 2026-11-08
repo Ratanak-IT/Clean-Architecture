@@ -1,0 +1,19 @@
+volumes:
+  ite-pg-vol:
+    driver: local
+networks:
+  ite-net:
+    external: true
+services:
+  oauth-postgres:
+    container_name: oauth-postgres
+    image: postgres:18.4
+    ports:
+      - "2222:5432"
+    environment:
+      POSTGRES_PASSWORD: qwerqwer
+      POSTGRES_USER: iteuser
+    volumes:
+      - ite-pg-vol:/var/lib/postgresql/18/docker
+    networks:
+      - ite-net

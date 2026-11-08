@@ -1,0 +1,35 @@
+pluginManagement {
+    includeBuild('../../build-logic')
+
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+        maven {
+            name = 'buf'
+            url 'https://buf.build/gen/maven'
+        }
+    }
+    versionCatalogs {
+        libs {
+            from(files("../../gradle/libs.versions.toml"))
+        }
+    }
+}
+
+rootProject.name = 'im-server'
+
+include 'iam-domain:iam-domain-core'
+include 'iam-domain:iam-application-service'
+include 'iam-infrastructure'
+include 'iam-main'
+include 'iam-persistence'
+include 'iam-rest-api'
+include 'iam-web'
+
+includeBuild('../../istad-common')

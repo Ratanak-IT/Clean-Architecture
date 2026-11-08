@@ -2,11 +2,13 @@
 server:
   port: 0
 
-grpc:
-  server:
-    port: 9090
+
 
 spring:
+  grpc:
+    server:
+      port: 9090
+
   main:
     web-application-type: reactive
   security:
@@ -15,9 +17,9 @@ spring:
         jwt:
           jwk-set-uri: http://localhost:9000/oauth2/jwks
 
-  autoconfigure:
-    exclude:
-      - net.devh.boot.grpc.server.autoconfigure.GrpcMetadataConsulConfiguration
+#  autoconfigure:
+#    exclude:
+#      - net.devh.boot.grpc.server.autoconfigure.GrpcMetadataConsulConfiguration
 #For mongoDb
   application:
     name: customer-service

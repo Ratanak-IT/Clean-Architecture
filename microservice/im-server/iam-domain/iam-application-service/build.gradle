@@ -1,0 +1,10 @@
+plugins {
+    id 'spring-common-conventions'
+}
+
+dependencies {
+    api project(':iam-domain:iam-domain-core')
+    implementation 'org.springframework:spring-tx'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}

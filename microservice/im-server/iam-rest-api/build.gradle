@@ -1,0 +1,9 @@
+plugins {
+    id 'spring-common-conventions'
+}
+
+dependencies {
+    api project(':iam-domain:iam-application-service')
+    implementation 'kh.edu.istad:istad-common-restapi'
+    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+}

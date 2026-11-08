@@ -56,6 +56,24 @@
                   <project path="$PROJECT_DIR$/microservice/eureka-server" />
                 </projects>
               </build>
+              <build path="$PROJECT_DIR$/microservice/gateway-server" name="gateway-server">
+                <projects>
+                  <project path="$PROJECT_DIR$/microservice/gateway-server" />
+                </projects>
+              </build>
+              <build path="$PROJECT_DIR$/microservice/im-server" name="im-server">
+                <projects>
+                  <project path="$PROJECT_DIR$/microservice/im-server" />
+                  <project path="$PROJECT_DIR$/microservice/im-server/iam-domain" />
+                  <project path="$PROJECT_DIR$/microservice/im-server/iam-domain/iam-application-service" />
+                  <project path="$PROJECT_DIR$/microservice/im-server/iam-domain/iam-domain-core" />
+                  <project path="$PROJECT_DIR$/microservice/im-server/iam-infrastructure" />
+                  <project path="$PROJECT_DIR$/microservice/im-server/iam-main" />
+                  <project path="$PROJECT_DIR$/microservice/im-server/iam-persistence" />
+                  <project path="$PROJECT_DIR$/microservice/im-server/iam-rest-api" />
+                  <project path="$PROJECT_DIR$/microservice/im-server/iam-web" />
+                </projects>
+              </build>
               <build path="$PROJECT_DIR$/microservice/order-service" name="order-service">
                 <projects>
                   <project path="$PROJECT_DIR$/microservice/order-service" />
@@ -82,8 +100,6 @@
             </builds>
           </compositeBuild>
         </compositeConfiguration>
-        <option name="delegatedBuild" value="false" />
-        <option name="testRunner" value="PLATFORM" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="gradleJvm" value="#JAVA_HOME" />
         <option name="modules">
@@ -114,6 +130,16 @@
             <option value="$PROJECT_DIR$/microservice/customer-service/customer-service-persistence" />
             <option value="$PROJECT_DIR$/microservice/customer-service/customer-service-restapi" />
             <option value="$PROJECT_DIR$/microservice/eureka-server" />
+            <option value="$PROJECT_DIR$/microservice/gateway-server" />
+            <option value="$PROJECT_DIR$/microservice/im-server" />
+            <option value="$PROJECT_DIR$/microservice/im-server/iam-domain" />
+            <option value="$PROJECT_DIR$/microservice/im-server/iam-domain/iam-application-service" />
+            <option value="$PROJECT_DIR$/microservice/im-server/iam-domain/iam-domain-core" />
+            <option value="$PROJECT_DIR$/microservice/im-server/iam-infrastructure" />
+            <option value="$PROJECT_DIR$/microservice/im-server/iam-main" />
+            <option value="$PROJECT_DIR$/microservice/im-server/iam-persistence" />
+            <option value="$PROJECT_DIR$/microservice/im-server/iam-rest-api" />
+            <option value="$PROJECT_DIR$/microservice/im-server/iam-web" />
             <option value="$PROJECT_DIR$/microservice/order-service" />
             <option value="$PROJECT_DIR$/microservice/order-service/order-service-client" />
             <option value="$PROJECT_DIR$/microservice/order-service/order-service-domain" />

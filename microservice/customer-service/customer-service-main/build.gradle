@@ -2,6 +2,17 @@ plugins {
     id 'spring-cloud-common-conventions'
 }
 
+//sourceSets {
+//    main.java.srcDir 'build/generated/buf'
+//}
+
+dependencyManagement {
+    dependencies {
+        dependency 'com.google.protobuf:protobuf-java:4.36.2'
+        dependency 'com.google.protobuf:protobuf-java-util:4.36.2'
+    }
+}
+
 dependencies {
 //    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
     implementation project(':customer-service-restapi')
@@ -12,17 +23,24 @@ dependencies {
     implementation project(':customer-service-persistence')
     runtimeOnly 'org.postgresql:postgresql'
     implementation 'kh.edu.istad:istad-common-restapi'
-    implementation 'kh.edu.istad:istad-common-grpc'
+    // gRPC server
+//    implementation 'kh.edu.istad:istad-common-grpc'
+//    implementation libs.bundles.grpc
+//    compileOnly libs.tomcat.annotations.api
+    implementation 'build.buf.gen:iteistad_customer-service_grpc_java:1.85.1.1.20261106032745.bc2a767779f7'
+    implementation('build.buf.gen:iteistad_customer-service_protocolbuffers_java:36.2.0.1.20261106032745.bc2a767779f7')
+
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.cloud:spring-cloud-starter-consul-discovery'
 //    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
     //grpc server
-    implementation 'net.devh:grpc-server-spring-boot-starter:3.1.0.RELEASE'
-    runtimeOnly 'io.grpc:grpc-services:1.85.1'
-
+    implementation 'org.springframework.boot:spring-boot-starter-grpc-server'
+    implementation 'org.springframework.boot:spring-boot-starter-grpc-client'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 //    Oauth2 dependency
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
 }
 
