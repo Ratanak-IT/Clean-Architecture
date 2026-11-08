@@ -27,6 +27,7 @@ public interface IdentityPersistenceMapper {
     }
 
     @Mapping(source = "user.id", target = "userId")
+    @Mapping(source = "user.uuid", target = "userUuid")
     @Mapping(target = "user", ignore = true)
     Identity toDomain(IdentityEntity entity);
 

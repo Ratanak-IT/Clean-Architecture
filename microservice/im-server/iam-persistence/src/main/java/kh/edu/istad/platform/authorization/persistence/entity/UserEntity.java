@@ -134,9 +134,9 @@ public class UserEntity extends AuditableEntity {
 
     public void addRole(RoleEntity role, String assignBy) {
         boolean alreadyActive = userRoles.stream()
-                .anyMatch(ur -> ur.getRole() != null && ur.getRole().equals(role)
-                && ur.getRevokedAt() == null );
-        if (alreadyActive){
+                .anyMatch(ur -> ur.getRole() != null && ur.getRole().getId() != null && ur.getRole().getId().equals(role.getId())
+                        && ur.getRevokedAt() == null);
+        if (!alreadyActive) {
             UserRoleEntity userRole = UserRoleEntity.builder()
                     .user(this)
                     .role(role)
@@ -145,12 +145,6 @@ public class UserEntity extends AuditableEntity {
                     .build();
             userRoles.add(userRole);
         }
-        UserRoleEntity userRole = UserRoleEntity.builder()
-                .user(this)
-                .role(role)
-                .assignedAt(Instant.now())
-                .build();
-        userRoles.add(userRole);
     }
 
 

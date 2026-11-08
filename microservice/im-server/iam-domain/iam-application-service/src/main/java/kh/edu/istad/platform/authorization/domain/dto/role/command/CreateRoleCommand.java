@@ -12,3 +12,4 @@ public record CreateRoleCommand(
         Set<UUID> permissionUuids
 ) {
 }
+

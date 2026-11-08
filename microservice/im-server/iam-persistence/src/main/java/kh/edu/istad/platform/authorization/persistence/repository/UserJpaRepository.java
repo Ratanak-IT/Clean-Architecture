@@ -2,13 +2,14 @@ package kh.edu.istad.platform.authorization.persistence.repository;
 
 import kh.edu.istad.platform.authorization.persistence.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface UserJpaRepository extends JpaRepository<UserEntity, Long> {
+public interface UserJpaRepository extends JpaRepository<UserEntity, Long>, JpaSpecificationExecutor<UserEntity> {
     boolean existsByUsername(String username);
     boolean existsByEmail(String email);
     Optional<UserEntity> findByUsername(String username);

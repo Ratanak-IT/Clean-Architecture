@@ -75,5 +75,4 @@ public abstract class AuditAware<ID> extends BaseEntity<ID> {
     public void setDeletedBy(String deletedBy) {
         this.deletedBy = deletedBy;
     }
-
 }

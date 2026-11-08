@@ -1,4 +1,4 @@
-package kh.edu.istad.platform.authorization.domain.dto.user.result;
+package kh.edu.istad.platform.authorization.domain.dto;
 
 import lombok.Builder;
 

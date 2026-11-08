@@ -1,7 +1,7 @@
 package kh.edu.istad.platform.authorization.infra.security;
 
-import kh.edu.istad.platform.authorization.domain.dto.identity.FederatedUserCommand;
-import kh.edu.istad.platform.authorization.domain.dto.identity.AuthUserResult;
+import kh.edu.istad.platform.authorization.domain.dto.identity.command.FederatedUserCommand;
+import kh.edu.istad.platform.authorization.domain.dto.identity.result.AuthUserResult;
 import kh.edu.istad.platform.authorization.domain.usecase.identity.FindOrProvisionFederatedUserUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -16,6 +16,8 @@ public class Identity extends AuditAware<Long> {
     private UUID uuid;
     // Owner -> users.id
     private Long userId;
+    // Owner -> users.uuid
+    private UUID userUuid;
     // Optional reference to User entity
     private User user;
     // LOCAL, GOOGLE, GITHUB, FACEBOOK, TELEGRAM
@@ -98,6 +100,14 @@ public class Identity extends AuditAware<Long> {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public UUID getUserUuid() {
+        return userUuid;
+    }
+
+    public void setUserUuid(UUID userUuid) {
+        this.userUuid = userUuid;
     }
 
     public User getUser() {
@@ -227,6 +237,7 @@ public class Identity extends AuditAware<Long> {
         private Long id;
         private UUID uuid;
         private Long userId;
+        private UUID userUuid;
         private User user;
         private IdentityProviderType provider;
         private String providerSubject;
@@ -259,6 +270,11 @@ public class Identity extends AuditAware<Long> {
 
         public Builder userId(Long userId) {
             this.userId = userId;
+            return this;
+        }
+
+        public Builder userUuid(UUID userUuid) {
+            this.userUuid = userUuid;
             return this;
         }
 
@@ -376,10 +392,12 @@ public class Identity extends AuditAware<Long> {
         }
 
         public Identity build() {
-            return new Identity(id, uuid, userId, user, provider, providerSubject,
+            Identity identity = new Identity(id, uuid, userId, user, provider, providerSubject,
                     email, emailVerified, displayName, username, pictureUrl,
                     attributes, linkedAt, lastLoginAt, deleted, deletedAt,
                     deletedBy, createdAt, createdBy, updatedAt, updatedBy, version);
+            identity.setUserUuid(userUuid);
+            return identity;
         }
     }
 }

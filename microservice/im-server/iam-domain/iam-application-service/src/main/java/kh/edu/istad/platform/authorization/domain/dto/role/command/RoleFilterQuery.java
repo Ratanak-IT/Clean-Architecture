@@ -19,3 +19,4 @@ public record RoleFilterQuery(
         if (sortDirection == null || sortDirection.isBlank()) sortDirection = "DESC";
     }
 }
+

@@ -60,7 +60,7 @@ public interface RolePersistenceMapper {
                         .isDeleted(p.isDeleted())
                         .version(p.getVersion())
                         .build();
-                entity.addPermission(pe);
+                entity.addPermission(pe, domain.getUpdatedBy() != null ? domain.getUpdatedBy() : "system");
             }
         }
     }

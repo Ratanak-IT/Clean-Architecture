@@ -26,12 +26,13 @@ public class PermissionEntity extends AuditableEntity {
     @Column(length = 100, nullable = false, unique = true)
     private String name;
 
-    @Column(length = 50)
+    @Column(length = 50, nullable = false)
     private String resource;
 
-    @Column(length = 50)
+    @Column(length = 50, nullable = false)
     private String action;
 
+    @Column(length = 255)
     private String description;
 
     @Column(name = "is_system", nullable = false)

@@ -9,8 +9,8 @@ import java.util.UUID;
 public record GrantPermissionsToUserCommand(
         UUID userUuid,
         Set<UUID> permissionUuids,
+        String effect,
         String grantedBy,
         String reason
 ) {
 }
-

@@ -1,7 +1,8 @@
 package kh.edu.istad.platform.authorization.persistence.adapter;
 
+import kh.edu.istad.common.domain.exception.ResourceNotFoundException;
 import kh.edu.istad.platform.authorization.domain.entity.Identity;
-import kh.edu.istad.platform.authorization.domain.port.out.IdentityRepository;
+import kh.edu.istad.platform.authorization.domain.port.out.identity.IdentityRepository;
 import kh.edu.istad.platform.authorization.domain.valueobject.IdentityProviderType;
 import kh.edu.istad.platform.authorization.persistence.entity.IdentityEntity;
 import kh.edu.istad.platform.authorization.persistence.entity.UserEntity;
@@ -27,7 +28,8 @@ public class IdentityRepositoryAdapter implements IdentityRepository {
     public Identity save(Identity identity) {
         IdentityEntity entity = mapper.toEntity(identity);
         if (identity.getUserId() != null) {
-            UserEntity userRef = userJpaRepository.getReferenceById(identity.getUserId());
+            UserEntity userRef = userJpaRepository.findById(identity.getUserId())
+                    .orElseThrow(() -> new ResourceNotFoundException("User", identity.getUserId()));
             entity.setUser(userRef);
         }
         IdentityEntity saved = identityJpaRepository.save(entity);
@@ -35,13 +37,17 @@ public class IdentityRepositoryAdapter implements IdentityRepository {
     }
 
     @Override
-    public Optional<Identity> findById(Long id) {
-        return identityJpaRepository.findById(id).map(mapper::toDomain);
+    public Identity findById(Long id) {
+        return identityJpaRepository.findById(id)
+                .map(mapper::toDomain)
+                .orElseThrow(() -> new ResourceNotFoundException("Identity", id));
     }
 
     @Override
-    public Optional<Identity> findByUuid(UUID uuid) {
-        return identityJpaRepository.findByUuid(uuid).map(mapper::toDomain);
+    public Identity findByUuid(UUID uuid) {
+        return identityJpaRepository.findByUuid(uuid)
+                .map(mapper::toDomain)
+                .orElseThrow(() -> new ResourceNotFoundException("Identity", uuid));
     }
 
     @Override
@@ -79,4 +85,3 @@ public class IdentityRepositoryAdapter implements IdentityRepository {
         identityJpaRepository.findByUuid(uuid).ifPresent(identityJpaRepository::delete);
     }
 }
-

@@ -59,12 +59,12 @@ public class InitCore {
             role = roleJpaRepository.save(role);
             permission = permissionJpaRepository.save(permission);
 
-            role.addPermission(permission);
+            role.addPermission(permission, "system");
             role = roleJpaRepository.save(role);
 
             user = userJpaRepository.save(user);
-            user.addRole(role);
-            user.addPermission(permission, "GRANT");
+            user.addRole(role, "system");
+            user.addPermission(permission, "GRANT", "system");
 
             userJpaRepository.save(user);
         }

@@ -1,11 +1,10 @@
 package kh.edu.istad.platform.authorization.domain.usecase.user;
 
-import kh.edu.istad.common.domain.exception.ResourceNotFoundException;
+import kh.edu.istad.platform.authorization.domain.entity.Role;
+import kh.edu.istad.platform.authorization.domain.entity.User;
 import kh.edu.istad.platform.authorization.domain.port.out.identity.CurrentActorProvider;
 import kh.edu.istad.platform.authorization.domain.port.out.role.RoleRepository;
 import kh.edu.istad.platform.authorization.domain.port.out.user.UserRepository;
-import kh.edu.istad.platform.authorization.domain.entity.User;
-import kh.edu.istad.platform.authorization.domain.entity.Role;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -24,12 +23,9 @@ public class RevokeRoleFromUserUseCase {
     private final CurrentActorProvider currentActorProvider;
 
     @Transactional
-    public void execute(UUID userUuid, UUID roleUuid, String reason){
-        User user = userRepository.findByUuid(userUuid)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with uuid: "+ userUuid));
-
-        Role roleToRevoke = roleRepository.findByUuid(roleUuid)
-                .orElseThrow(() -> new ResourceNotFoundException("Role not found with uuid: " + roleUuid));
+    public void execute(UUID userUuid, UUID roleUuid, String reason) {
+        User user = userRepository.findByUuid(userUuid);
+        Role roleToRevoke = roleRepository.findByUuid(roleUuid);
 
         if (user.getRoles() != null) {
             Set<Role> updatedRoles = new HashSet<>(user.getRoles());
@@ -42,4 +38,3 @@ public class RevokeRoleFromUserUseCase {
         }
     }
 }
-

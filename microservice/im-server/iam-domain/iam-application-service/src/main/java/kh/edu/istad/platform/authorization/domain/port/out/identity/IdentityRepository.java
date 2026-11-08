@@ -9,8 +9,8 @@ import java.util.UUID;
 
 public interface IdentityRepository {
     Identity save(Identity identity);
-    Optional<Identity> findById(Long id);
-    Optional<Identity> findByUuid(UUID uuid);
+    Identity findById(Long id);
+    Identity findByUuid(UUID uuid);
     Optional<Identity> findByProviderAndProviderSubject(IdentityProviderType provider, String providerSubject);
     List<Identity> findByUserId(Long userId);
     List<Identity> findByUserUuid(UUID userUuid);
@@ -18,4 +18,3 @@ public interface IdentityRepository {
     void deleteById(Long id);
     void deleteByUuid(UUID uuid);
 }
-

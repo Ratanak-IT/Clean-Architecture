@@ -1,7 +1,8 @@
 package kh.edu.istad.platform.authorization.persistence.adapter;
 
+import kh.edu.istad.common.domain.exception.ResourceNotFoundException;
 import kh.edu.istad.platform.authorization.domain.entity.Role;
-import kh.edu.istad.platform.authorization.domain.port.out.RoleRepository;
+import kh.edu.istad.platform.authorization.domain.port.out.role.RoleRepository;
 import kh.edu.istad.platform.authorization.persistence.entity.RoleEntity;
 import kh.edu.istad.platform.authorization.persistence.mapper.RolePersistenceMapper;
 import kh.edu.istad.platform.authorization.persistence.repository.RoleJpaRepository;
@@ -9,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -26,18 +26,24 @@ public class RoleRepositoryAdapter implements RoleRepository {
     }
 
     @Override
-    public Optional<Role> findById(Long id) {
-        return roleJpaRepository.findById(id).map(mapper::toDomain);
+    public Role findById(Long id) {
+        return roleJpaRepository.findById(id)
+                .map(mapper::toDomain)
+                .orElseThrow(() -> new ResourceNotFoundException("Role", id));
     }
 
     @Override
-    public Optional<Role> findByUuid(UUID uuid) {
-        return roleJpaRepository.findByUuid(uuid).map(mapper::toDomain);
+    public Role findByUuid(UUID uuid) {
+        return roleJpaRepository.findByUuid(uuid)
+                .map(mapper::toDomain)
+                .orElseThrow(() -> new ResourceNotFoundException("Role", uuid));
     }
 
     @Override
-    public Optional<Role> findByRole(String role) {
-        return roleJpaRepository.findByName(role).map(mapper::toDomain);
+    public Role findByRole(String role) {
+        return roleJpaRepository.findByName(role)
+                .map(mapper::toDomain)
+                .orElseThrow(() -> new ResourceNotFoundException("Role with name: " + role + " not found"));
     }
 
     @Override
@@ -57,6 +63,6 @@ public class RoleRepositoryAdapter implements RoleRepository {
 
     @Override
     public void deleteByUuid(UUID uuid) {
-        roleJpaRepository.deleteByUuid(uuid);
+        roleJpaRepository.findByUuid(uuid).ifPresent(roleJpaRepository::delete);
     }
 }

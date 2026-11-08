@@ -5,8 +5,8 @@ import java.util.UUID;
 
 // Implemented by iam-infrastructure reading the SecurityContext.
 public interface CurrentActorProvider {
-    Optional<UUID> getCurrentUserUuid();
-    Optional<String> getCurrentUsername();
-    Optional<String> getCurrentActor();
+    UUID getCurrentUserUuid();
+    Optional<UUID> findCurrentUserUuid();
+    String getCurrentUsername();
+    String getCurrentActor();
 }
-
