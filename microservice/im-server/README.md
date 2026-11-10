@@ -5,6 +5,7 @@
 [![Spring Authorization Server](https://img.shields.io/badge/Spring%20Authorization%20Server-1.4+-blue.svg)](https://spring.io/projects/spring-authorization-server)
 [![JTE](https://img.shields.io/badge/Template%20Engine-JTE%203.2-blueviolet.svg)](https://jte.gg/)
 [![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-blue.svg)](https://www.postgresql.org/)
+[![Postman Collection](https://img.shields.io/badge/Postman-Download%20Collection-orange.svg)](https://github.com/Ratanak-IT/Clean-Architecture/releases/download/v1.0.0/New.Collection.postman_collection.json)
 [![Architecture](https://img.shields.io/badge/Architecture-Hexagonal%20%2F%20DDD-lightgrey.svg)]()
 
 A production-grade, enterprise-ready **Identity & Access Management (IAM)** and **OAuth2 & OpenID Connect 1.0 (OIDC)** Authorization Server built with **Spring Boot 3**, **Spring Security 7**, and **Java 25**. Designed using **Domain-Driven Design (DDD)** and **Hexagonal (Ports & Adapters) Clean Architecture**.
@@ -17,9 +18,8 @@ A production-grade, enterprise-ready **Identity & Access Management (IAM)** and 
 - [Pre-configured Accounts and Clients](#pre-configured-accounts-and-clients)
 - [Environment Configuration](#environment-configuration)
 - [Getting Started and Running](#getting-started-and-running)
-- [OAuth2 and OIDC Endpoints](#oauth2-and-oidc-endpoints)
-- [REST API Reference](#rest-api-reference)
 - [JTE Web Pages and UI Routes](#jte-web-pages-and-ui-routes)
+- [Postman API Collection](#postman-api-collection)
 - [Testing the OAuth2 Authorization Code Flow](#testing-the-oauth2-authorization-code-flow)
 
 ---
@@ -162,21 +162,6 @@ The server will start up on **`http://localhost:9000`**.
 
 ---
 
-## OAuth2 and OIDC Endpoints
-
-| Protocol | Endpoint | Description |
-| :--- | :--- | :--- |
-| **OIDC Discovery** | `GET /.well-known/openid-configuration` | OpenID Connect server metadata & configuration |
-| **JWKS Keyset** | `GET /oauth2/jwks` | Public RSA JSON Web Keys for verifying token signatures |
-| **Authorize** | `GET /oauth2/authorize` | OAuth2 Authorization endpoint |
-| **Token** | `POST /oauth2/token` | OAuth2 Token endpoint (code exchange, refresh token, client credentials) |
-| **Token Revocation** | `POST /oauth2/revoke` | Revokes an issued Access Token or Refresh Token |
-| **Token Introspection**| `POST /oauth2/introspect` | Inspects the active state and metadata of a token |
-| **User Consent** | `GET /oauth2/consent`<br>`POST /oauth2/authorize` | Custom JTE Consent page and consent submission |
-| **Client Registration**| `POST /connect/register`<br>`GET /connect/register?client_id={id}` | Dynamic Client Registration (RFC 7591) |
-
----
-
 ## JTE Web Pages and UI Routes
 
 All web views are built with **JTE** with full English & Khmer language switching (`?lang=en|km`):
@@ -194,60 +179,17 @@ All web views are built with **JTE** with full English & Khmer language switchin
 
 ---
 
-## REST API Reference
+## Postman API Collection
 
-All administrative REST APIs are secured under `/api/**` with Role and Permission-Based Access Control:
+A ready-to-use Postman Collection containing all API requests for testing (OAuth2 / OIDC token issuance, User Management, Roles, and Permissions):
 
-### 1. Current Authenticated User (`/api/me/**`)
-| Method | Endpoint | Description | Required Authority |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/api/me` | Get current user's profile | Authenticated |
-| `PUT` | `/api/me/password` | Change current user password | Authenticated |
-| `GET` | `/api/me/identities` | List linked identities | Authenticated |
-| `DELETE` | `/api/me/identities/{id}` | Unlink a linked identity | Authenticated |
+- **Direct Download Link**: [Download Postman Collection (v1.0.0)](https://github.com/Ratanak-IT/Clean-Architecture/releases/download/v1.0.0/New.Collection.postman_collection.json)
 
-### 2. User Management (`/api/users/**`)
-| Method | Endpoint | Description | Required Authority |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/api/users` | Create a new user account | `user:create` |
-| `GET` | `/api/users` | List users with filtering & pagination | `user:read` |
-| `GET` | `/api/users/{uuid}` | Get user details by UUID | `user:read` |
-| `PATCH` | `/api/users/{uuid}` | Update user profile | `user:update` |
-| `DELETE`| `/api/users/{uuid}` | Delete user (soft delete) | `user:delete` |
-| `POST` | `/api/users/{uuid}/enable` | Enable a disabled user | `user:update` |
-| `POST` | `/api/users/{uuid}/disable` | Disable an active user | `user:update` |
-| `POST` | `/api/users/{uuid}/lock` | Lock user account | `user:update` |
-| `POST` | `/api/users/{uuid}/unlock` | Unlock user account | `user:update` |
-| `PUT` | `/api/users/{uuid}/password` | Reset user password (admin) | `user:update` |
-| `GET` | `/api/users/{uuid}/authorities` | Get effective user roles & permissions | `user:read` |
-| `POST` | `/api/users/{uuid}/roles` | Assign roles to user | `user:assign` |
-| `DELETE`| `/api/users/{uuid}/roles/{roleUuid}` | Revoke role from user | `user:assign` |
-| `POST` | `/api/users/{uuid}/permissions` | Grant/Revoke direct user permissions | `user:assign` |
-| `DELETE`| `/api/users/{uuid}/permissions/{permUuid}` | Delete user permission override | `user:assign` |
-
-### 3. Role Management (`/api/roles/**`)
-| Method | Endpoint | Description | Required Authority |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/api/roles` | Create a new role | `role:create` |
-| `GET` | `/api/roles` | List roles with search, filter & pagination | `role:read` |
-| `GET` | `/api/roles/{uuid}` | Get role details with permissions | `role:read` |
-| `PATCH` | `/api/roles/{uuid}` | Update role name/description | `role:update` |
-| `DELETE`| `/api/roles/{uuid}` | Delete role | `role:delete` |
-| `POST` | `/api/roles/{uuid}/activate` | Activate role | `role:update` |
-| `POST` | `/api/roles/{uuid}/deactivate` | Deactivate role | `role:update` |
-| `POST` | `/api/roles/{uuid}/permissions` | Assign permissions to role | `role:assign` |
-| `DELETE`| `/api/roles/{uuid}/permissions/{permUuid}` | Revoke permission from role | `role:assign` |
-
-### 4. Permission Management (`/api/permissions/**`)
-| Method | Endpoint | Description | Required Authority |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/api/permissions` | Create a new permission | `permission:create` |
-| `GET` | `/api/permissions` | List permissions with filtering | `permission:read` |
-| `GET` | `/api/permissions/{uuid}` | Get permission details | `permission:read` |
-| `PATCH` | `/api/permissions/{uuid}` | Update permission details | `permission:update` |
-| `DELETE`| `/api/permissions/{uuid}` | Delete permission | `permission:delete` |
-| `POST` | `/api/permissions/{uuid}/activate` | Activate permission | `permission:update` |
-| `POST` | `/api/permissions/{uuid}/deactivate` | Deactivate permission | `permission:update` |
+### How to Import into Postman
+1. Open the Postman application.
+2. Click the **Import** button in the upper-left corner of the workspace.
+3. Select or drag-and-drop the downloaded `New.Collection.postman_collection.json` file.
+4. Set the `baseUrl` collection variable to `http://localhost:9000` to start sending requests.
 
 ---
 
